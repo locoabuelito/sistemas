@@ -1,0 +1,36 @@
+# --- Bytecode (Archivos compilados por Python) ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- Entornos Virtuales (Virtual Environments) ---
+# NUNCA subas tu carpeta de entorno, usa requirements.txt
+env/
+venv/
+.env/
+.venv/
+ENV/
+
+# --- Distribución y Empaquetado ---
+build/
+dist/
+*.egg-info/
+
+# --- Pruebas Unitarias y Coverage ---
+.tox/
+.coverage
+htmlcov/
+.pytest_cache/
+
+# --- Jupyter Notebooks (Si haces ciencia de datos) ---
+.ipynb_checkpoints
+
+# --- IDEs y Editores ---
+.vscode/
+.idea/
+
+# --- Archivos de Entorno / Seguridad (CRÍTICO) ---
+# Aquí van tus claves API y contraseñas de DB
+.env
+.env.local

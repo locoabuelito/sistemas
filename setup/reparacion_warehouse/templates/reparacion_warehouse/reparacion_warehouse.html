@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reparación Warehouse - Sistema de Reparaciones</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary-color: #64748b;
+            --accent-color: #f59e0b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --dark-color: #1e293b;
+            --gray-color: #64748b;
+            --light-gray: #e2e8f0;
+            --background-color: #f8fafc;
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .header p {
+            color: var(--gray-color);
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--dark-color);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .submit-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            width: 100%;
+            transition: background 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .solicitudes-list {
+            margin-top: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .solicitud-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .solicitud-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .solicitud-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .solicitud-id {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .solicitud-status {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .status-pendiente {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-proceso {
+            background: #dbeafe;
+            color: var(--primary-color);
+        }
+
+        .status-completado {
+            background: #d1fae5;
+            color: var(--success-color);
+        }
+
+        .solicitud-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            color: var(--gray-color);
+            margin-bottom: 2px;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .wh-badge {
+            display: inline-block;
+            padding: 3px 6px;
+            background: var(--primary-light);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .tipo-badge {
+            display: inline-block;
+            padding: 3px 6px;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .info-adicional {
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 8px;
+            border-left: 3px solid var(--light-gray);
+        }
+
+        .info-label {
+            font-size: 0.7rem;
+            color: var(--gray-color);
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 0.8rem;
+            color: var(--dark-color);
+            line-height: 1.4;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 5px solid var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--gray-color);
+            font-size: 0.8rem;
+        }
+
+        .solicitudes-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .solicitudes-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .solicitudes-list::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .solicitudes-list::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            .solicitud-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="/menu-principal/" class="back-link">← Volver al Menú Principal</a>
+
+        <div class="header">
+            <h1>🏢 Reparación Warehouse</h1>
+            <p>Sistema de gestión y seguimiento de reparaciones para equipos del almacén</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="total-solicitudes">3</div>
+                <div class="stat-label">Total Solicitudes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="solicitudes-pendientes">2</div>
+                <div class="stat-label">Pendientes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="solicitudes-proceso">1</div>
+                <div class="stat-label">En Proceso</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="solicitudes-completadas">0</div>
+                <div class="stat-label">Completadas</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <h3>➕ Nueva Solicitud de Reparación</h3>
+                <form id="solicitudForm">
+                    <div class="form-group">
+                        <label for="warehouse">Seleccionar Warehouse:</label>
+                        <select id="warehouse" required>
+                            <option value="">Seleccione el Warehouse</option>
+                            {% for wh in warehouses %}
+                            <option value="{{ wh.nombre_ubicacion }}">{{ wh.nombre_ubicacion }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tipoMaquina">Tipo de Máquina:</label>
+                        <select id="tipoMaquina" required>
+                            <option value="">Seleccione el tipo de máquina</option>
+                            {% for tipo in tipos_maquinas %}
+                            <option value="{{ tipo|slugify }}">{{ tipo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tipoProblema">Tipo de Problema:</label>
+                        <select id="tipoProblema" required>
+                            <option value="">Seleccione el tipo de problema</option>
+                            
+                            {% for problema in tipos_problema %}
+                            <option value="{{ problema.id_tipo_problema }}" data-nombre="{{ problema.nombre_problema }}">
+                                {{ problema.nombre_problema }}
+                            </option>
+                            {% endfor %}
+
+                            <option value="otros_manual" data-nombre="Otros problemas no identificados">
+                                Otros problemas no identificados
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="thCantidad">Cantidad de TH/s afectados:</label>
+                        <input type="number" id="thCantidad" min="0" max="10000" step="0.1" required
+                            placeholder="Ej: 120.5">
+                    </div>
+
+                    <input type="hidden" id="tecnicoId" value="{{ usuario_logueado.id_usuario_tecnico }}">
+                    <input type="hidden" id="tecnicoNombre" value="{{ usuario_logueado.nombre_tecnico }}">
+
+                    <div class="form-group">
+                        <label for="descripcion">Descripción del Problema:</label>
+                        <textarea id="descripcion"
+                            placeholder="Describa en detalle el problema encontrado, equipo afectado, síntomas observados..."
+                            required></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">📋 Crear Solicitud de Reparación</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>📋 Solicitudes de Reparación Activas</h3>
+                <div class="solicitudes-list" id="solicitudesList">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let solicitudes = [
+            {
+                id: "SR-001-151124",
+                warehouse: "WH-01",
+                tipoMaquina: "asic",
+                tipoProblema: "Falla de Hardware",
+                thCantidad: 85.5,
+                tecnico: "Juan Pérez",
+                descripcion: "Problema con las tarjetas gráficas en el rack 3, se detectaron 5 GPUs fallidas. Se requiere reemplazo inmediato.",
+                status: "pendiente",
+                fecha: "2024-11-15",
+                fechaCreacion: "15/11/2024"
+            },
+            {
+                id: "SR-002-141124",
+                warehouse: "WH-03",
+                tipoMaquina: "gpu-rack",
+                tipoProblema: "Error de Software",
+                thCantidad: 120.0,
+                tecnico: "María González",
+                descripcion: "Error en el software de minería, requiere actualización del firmware. Los equipos presentan reinicios constantes.",
+                status: "proceso",
+                fecha: "2024-11-14",
+                fechaCreacion: "14/11/2024"
+            },
+            {
+                id: "SR-003-161124",
+                warehouse: "WH-07",
+                tipoMaquina: "cooling",
+                tipoProblema: "Problema de Temperatura",
+                thCantidad: 45.2,
+                tecnico: "Carlos Rodríguez",
+                descripcion: "Sistema de ventilación fallando en el sector B, temperatura elevada detectada por sensores. Riesgo de sobrecalentamiento.",
+                status: "pendiente",
+                fecha: "2024-11-16",
+                fechaCreacion: "16/11/2024"
+            }
+        ];
+
+        let contadorSolicitudes = 4;
+
+        const tiposMaquina = {
+            'asic': 'ASIC Miner',
+            'gpu-rack': 'GPU Rack',
+            'servidor': 'Servidor',
+            'switch': 'Switch de Red',
+            'router': 'Router',
+            'ups': 'Sistema UPS',
+            'cooling': 'Sistema de Enfriamiento',
+            'pdu': 'PDU',
+            'transformador': 'Transformador',
+            'otros': 'Otros Equipos'
+        };
+
+        function formatearFechaParaID(fecha) {
+            const date = new Date(fecha);
+            const dia = date.getDate().toString().padStart(2, '0');
+            const mes = (date.getMonth() + 1).toString().padStart(2, '0');
+            const año = date.getFullYear().toString().slice(-2);
+            return `${dia}${mes}${año}`;
+        }
+
+        function generarIdSolicitud() {
+            const fechaActual = new Date();
+            const fechaFormateada = formatearFechaParaID(fechaActual);
+            const numero = contadorSolicitudes.toString().padStart(3, '0');
+            contadorSolicitudes++;
+            return `SR-${numero}-${fechaFormateada}`;
+        }
+
+        function formatearFechaLegible(fecha) {
+            const date = new Date(fecha);
+            return date.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            cargarSolicitudesExistentes();
+            actualizarEstadisticas();
+        });
+
+        function cargarSolicitudesExistentes() {
+            const lista = document.getElementById('solicitudesList');
+            lista.innerHTML = '';
+
+            solicitudes.sort((a, b) => {
+                const statusOrder = { 'pendiente': 1, 'proceso': 2, 'completado': 3 };
+                return statusOrder[a.status] - statusOrder[b.status];
+            });
+
+            solicitudes.forEach(solicitud => {
+                agregarSolicitudALista(solicitud);
+            });
+        }
+
+        document.getElementById('solicitudForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const warehouseSelect = document.getElementById('warehouse');
+            const warehouseValue = warehouseSelect.value;
+            const warehouseText = warehouseSelect.options[warehouseSelect.selectedIndex].text;
+
+            // LÓGICA AGREGADA PARA CAPTURAR EL TIPO DE PROBLEMA
+            const tipoProblemaSelect = document.getElementById('tipoProblema');
+            const tipoProblemaId = tipoProblemaSelect.value;
+            const tipoProblemaText = tipoProblemaSelect.options[tipoProblemaSelect.selectedIndex].getAttribute('data-nombre');
+
+            const tecnicoNombre = document.getElementById('tecnicoNombre').value;
+
+            const fechaActual = new Date();
+            const nuevaSolicitud = {
+                id: generarIdSolicitud(),
+                warehouse: warehouseValue,
+                warehouseText: warehouseText,
+                tipoMaquina: document.getElementById('tipoMaquina').value,
+                tipoProblema: tipoProblemaText, // Aquí usamos el nombre capturado
+                tipoProblemaId: tipoProblemaId, // Aquí guardamos el ID por si lo necesitas
+                thCantidad: parseFloat(document.getElementById('thCantidad').value),
+                tecnico: tecnicoNombre,
+                descripcion: document.getElementById('descripcion').value,
+                status: "pendiente",
+                fecha: fechaActual.toISOString().split('T')[0],
+                fechaCreacion: formatearFechaLegible(fechaActual)
+            };
+
+            solicitudes.push(nuevaSolicitud);
+            agregarSolicitudALista(nuevaSolicitud);
+            actualizarEstadisticas();
+
+            this.reset();
+
+            alert('✅ Solicitud creada exitosamente: ' + nuevaSolicitud.id);
+        });
+
+        function agregarSolicitudALista(solicitud) {
+            const lista = document.getElementById('solicitudesList');
+            const statusClass = `status-${solicitud.status}`;
+            const statusText = solicitud.status.toUpperCase();
+
+            // Mapeo seguro del tipo de máquina (fallback si no existe en el objeto)
+            const nombreMaquina = tiposMaquina[solicitud.tipoMaquina] || solicitud.tipoMaquina;
+
+            const solicitudHTML = `
+                <div class="solicitud-item">
+                    <div class="solicitud-header">
+                        <span class="solicitud-id">
+                            <span class="wh-badge">${solicitud.warehouse}</span>
+                            ${solicitud.id}
+                            <span class="tipo-badge">${nombreMaquina}</span>
+                        </span>
+                        <span class="solicitud-status ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="solicitud-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Técnico</span>
+                            <span class="detail-value">${solicitud.tecnico}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">TH/s Afectados</span>
+                            <span class="detail-value">${solicitud.thCantidad} TH/s</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Problema</span>
+                            <span class="detail-value">${solicitud.tipoProblema}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Creado</span>
+                            <span class="detail-value">${solicitud.fechaCreacion}</span>
+                        </div>
+                    </div>
+                    <div class="info-adicional">
+                        <div class="info-label">Descripción del Problema:</div>
+                        <div class="info-value">${solicitud.descripcion}</div>
+                    </div>
+                </div>
+            `;
+
+            lista.insertAdjacentHTML('beforeend', solicitudHTML);
+        }
+
+        function actualizarEstadisticas() {
+            const total = solicitudes.length;
+            const pendientes = solicitudes.filter(s => s.status === 'pendiente').length;
+            const proceso = solicitudes.filter(s => s.status === 'proceso').length;
+            const completadas = solicitudes.filter(s => s.status === 'completado').length;
+
+            document.getElementById('total-solicitudes').textContent = total;
+            document.getElementById('solicitudes-pendientes').textContent = pendientes;
+            document.getElementById('solicitudes-proceso').textContent = proceso;
+            document.getElementById('solicitudes-completadas').textContent = completadas;
+        }
+    </script>
+</body>
+
+</html>

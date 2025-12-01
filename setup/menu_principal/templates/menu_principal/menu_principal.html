@@ -1,0 +1,566 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Principal - Sistema de Reparaciones</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary-color: #64748b;
+            --accent-color: #f59e0b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --dark-color: #1e293b;
+            --gray-color: #64748b;
+            --light-gray: #e2e8f0;
+            --background-color: #f8fafc;
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+            position: relative;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-details {
+            text-align: right;
+            color: white;
+        }
+
+        .user-name {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .user-sector {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 20px;
+        }
+
+        .menu-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--dark-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .menu-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .menu-card:hover::before {
+            left: 100%;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 1);
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .menu-card:hover .card-icon {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+
+        .card-description {
+            color: var(--gray-color);
+            line-height: 1.6;
+            font-size: 0.95rem;
+            flex-grow: 1;
+        }
+
+        .card-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--gray-color);
+            margin-top: 2px;
+        }
+
+        /* Colores específicos para cada card */
+        .card-reparacion-warehouse:hover {
+            border-left-color: #2563eb;
+        }
+
+        .card-reparacion-hydro:hover {
+            border-left-color: #10b981;
+        }
+
+        .card-historial:hover {
+            border-left-color: #f59e0b;
+        }
+
+        .card-informes-warehouse:hover {
+            border-left-color: #3b82f6;
+        }
+
+        .card-informes-hydro:hover {
+            border-left-color: #8b5cf6;
+        }
+
+        .card-prestamos:hover {
+            border-left-color: #f97316;
+        }
+
+        .card-inventario:hover {
+            border-left-color: #64748b;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: white;
+            opacity: 0.8;
+        }
+
+        /* Badges para estados */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .status-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        @media (max-width: 768px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .menu-card {
+                min-height: 200px;
+                padding: 20px;
+            }
+
+            .user-info {
+                position: relative;
+                justify-content: center;
+                margin-bottom: 20px;
+            }
+        }
+
+        /* Estilos para Alertas (Flash Messages) */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            position: relative;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .alert-success {
+            color: #0f5132;
+            background-color: #d1e7dd;
+            border-color: #badbcc;
+        }
+
+        .alert-error,
+        .alert-danger {
+            color: #842029;
+            background-color: #f8d7da;
+            border-color: #f5c2c7;
+        }
+
+        .alert-warning {
+            color: #664d03;
+            background-color: #fff3cd;
+            border-color: #ffecb5;
+        }
+
+        .alert-info {
+            color: #055160;
+            background-color: #cff4fc;
+            border-color: #b6effb;
+        }
+
+        .btn-close {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: inherit;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .btn-close:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+                <button type="button" class="btn-close"
+                    onclick="this.parentElement.style.display='none';">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="header">
+            <!-- Información del usuario y logout -->
+            <div class="user-info">
+                <div class="user-details">
+                    <div class="user-name">{{ user_info.nombre_tecnico }}</div>
+                    <div class="user-sector">{{ user_info.sector }}</div>
+                </div>
+                <a href="{% url 'usuarios:logout' %}" class="logout-btn">
+                    Cerrar Sesión
+                </a>
+            </div>
+
+            <h1>🏭 Sistema de Gestión Técnica</h1>
+            <p>Seleccione una opción del menú para continuar</p>
+        </div>
+
+        <div class="menu-grid">
+            <!-- Card 1: Reparacion Warehouse -->
+            <a href="{% url 'reparacion_warehouse' %}" class="menu-card card-reparacion-warehouse">
+                <div class="card-icon">🏢</div>
+                <div class="card-title">Reparación Warehouse</div>
+                <div class="card-description">
+                    Gestión y seguimiento de reparaciones para equipos de Warehouse. Registre nuevas solicitudes de
+                    reparaciones y realice seguimiento.
+                </div>
+                {% comment %} <div class="card-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Activas</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">85.5</div>
+                        <div class="stat-label">TH/s</div>
+                    </div>
+                </div> {% endcomment %}
+            </a>
+
+            <!-- Card 2: Reparacion Hydro -->
+            <a href="/menu-principal/reparacion-hydro/" class="menu-card card-reparacion-hydro">
+                <div class="card-icon">💧</div>
+                <div class="card-title">Reparación Hydro</div>
+                <div class="card-description">
+                    Sistema especializado para reparaciones de equipos hidráulicos. Control y mantenimiento de sistemas
+                    hydro.
+                </div>
+                <div class="card-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">2</div>
+                        <div class="stat-label">Activas</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">375.5</div>
+                        <div class="stat-label">TH/s</div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 3: Historial de reparaciones -->
+            <a href="/menu-principal/historial-reparaciones/" class="menu-card card-historial">
+                <div class="card-icon">📊</div>
+                <div class="card-title">Historial de Reparaciones</div>
+                <div class="card-description">
+                    Consulte el historial completo de todas las reparaciones realizadas. Filtros y búsqueda avanzada
+                    disponible.
+                </div>
+                <div class="card-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">156</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">94%</div>
+                        <div class="stat-label">Éxito</div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 4: Informes Reparacion Warehouse -->
+            <a href="/menu-principal/informes-warehouse/" class="menu-card card-informes-warehouse">
+                <div class="card-icon">📋</div>
+                <div class="card-title">Informes Reparación Warehouse</div>
+                <div class="card-description">
+                    Generación de reportes y análisis estadísticos para reparaciones del almacén. Exporte datos en
+                    múltiples formatos.
+                </div>
+                <div class="card-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Reportes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">98%</div>
+                        <div class="stat-label">Cumplimiento</div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 5: Informes Reparacion Hydro -->
+            <a href="/menu-principal/informes-hydro/" class="menu-card card-informes-hydro">
+                <div class="card-icon">📈</div>
+                <div class="card-title">Informes Reparación Hydro</div>
+                <div class="card-description">
+                    Reportes detallados y métricas de rendimiento para reparaciones hydro. Análisis de tendencias y
+                    KPIs.
+                </div>
+                <div class="card-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">Métricas</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">96%</div>
+                        <div class="stat-label">Eficiencia</div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- NUEVO CARD 6: Préstamos de Herramientas -->
+            <a href="/menu-principal/prestamos-herramientas/" class="menu-card card-prestamos">
+                <div class="card-icon">🛠️</div>
+                <div class="card-title">
+                    Préstamos de Herramientas
+                    <span class="status-badge status-active">5 ACTIVOS</span>
+                </div>
+                <div class="card-description">
+                    Sistema de control y seguimiento de préstamos de herramientas. Gestión de inventario y devoluciones
+                    en tiempo real.
+                </div>
+                <div class="card-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">45</div>
+                        <div class="stat-label">Herramientas</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Pendientes</div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- NUEVO CARD 7: Control de Inventarios -->
+            <a href="{% url 'control_inventarios' %}" class="menu-card card-inventario">
+                <div class="card-icon">📦</div>
+                <div class="card-title">
+                    Control de Inventarios
+                    <span class="status-badge status-warning">2 BAJO STOCK</span>
+                </div>
+                <div class="card-description">
+                    Gestión completa de inventario de repuestos y materiales para Hydro y Warehouse.
+                </div>
+                {% comment %} <div class="card-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">156</div>
+                        <div class="stat-label">Items</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">98%</div>
+                        <div class="stat-label">Disponibilidad</div>
+                    </div>
+                </div> {% endcomment %}
+            </a>
+        </div>
+
+        <div class="footer">
+            <p>&copy; Bruno Soto - Versión 1.0</p>
+        </div>
+    </div>
+
+    <script>
+        // Animaciones adicionales
+        document.addEventListener('DOMContentLoaded', function () {
+            const cards = document.querySelectorAll('.menu-card');
+
+            cards.forEach((card, index) => {
+                // Animación de entrada escalonada
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            // Efecto de sonido al hacer hover (opcional)
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function () {
+                    this.style.cursor = 'pointer';
+                });
+            });
+        });
+
+        // Simular datos dinámicos (esto se conectaría con la base de datos)
+        function actualizarEstadisticas() {
+            // En una implementación real, esto haría fetch a una API
+            console.log('Actualizando estadísticas del dashboard...');
+        }
+
+        // Actualizar cada 30 segundos (opcional)
+        setInterval(actualizarEstadisticas, 30000);
+    </script>
+</body>
+
+</html>

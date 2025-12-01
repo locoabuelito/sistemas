@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informes Warehouse - Sistema de Reparaciones</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary-color: #64748b;
+            --accent-color: #f59e0b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --dark-color: #1e293b;
+            --gray-color: #64748b;
+            --light-gray: #e2e8f0;
+            --background-color: #f8fafc;
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .header p {
+            color: var(--gray-color);
+        }
+
+        .report-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .report-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            background: #f8fafc;
+        }
+
+        .report-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .report-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .report-card p {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+
+        .charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .chart-container h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .chart-placeholder {
+            height: 200px;
+            background: linear-gradient(45deg, #f0f9ff, #dbeafe);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-weight: bold;
+            border: 2px dashed var(--primary-light);
+        }
+
+        .export-options {
+            margin-top: 30px;
+            text-align: center;
+            padding: 20px;
+            background: #f0f9ff;
+            border-radius: 10px;
+            border: 2px solid var(--primary-light);
+        }
+
+        .export-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 0 10px;
+            transition: background 0.3s ease;
+        }
+
+        .export-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .metric-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .metric-label {
+            color: var(--gray-color);
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .charts {
+                grid-template-columns: 1fr;
+            }
+            
+            .export-options {
+                text-align: center;
+            }
+            
+            .export-btn {
+                display: block;
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/menu-principal/" class="back-link">← Volver al Menú Principal</a>
+        
+        <div class="header">
+            <h1>📋 Informes Reparación Warehouse</h1>
+            <p>Reportes y análisis estadísticos para reparaciones del almacén</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-item">
+                <div class="metric-value">94%</div>
+                <div class="metric-label">Eficiencia</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-value">2.3d</div>
+                <div class="metric-label">Tiempo Promedio</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-value">₡1.2M</div>
+                <div class="metric-label">Ahorro Mensual</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-value">98%</div>
+                <div class="metric-label">Satisfacción</div>
+            </div>
+        </div>
+
+        <div class="report-actions">
+            <div class="report-card">
+                <div class="report-icon">📅</div>
+                <h3>Reporte Mensual</h3>
+                <p>Análisis de reparaciones del mes actual</p>
+            </div>
+            <div class="report-card">
+                <div class="report-icon">⚡</div>
+                <h3>Rendimiento Técnicos</h3>
+                <p>Eficiencia y productividad del equipo</p>
+            </div>
+            <div class="report-card">
+                <div class="report-icon">💰</div>
+                <h3>Análisis de Costos</h3>
+                <p>Gastos y presupuestos de reparación</p>
+            </div>
+            <div class="report-card">
+                <div class="report-icon">🛠️</div>
+                <h3>Inventario Repuestos</h3>
+                <p>Stock y consumo de materiales</p>
+            </div>
+        </div>
+
+        <div class="charts">
+            <div class="chart-container">
+                <h3>Reparaciones por Tipo de Equipo</h3>
+                <div class="chart-placeholder">
+                    Gráfico de Barras - Reparaciones por Tipo
+                </div>
+            </div>
+            <div class="chart-container">
+                <h3>Tiempos Promedio de Reparación</h3>
+                <div class="chart-placeholder">
+                    Gráfico de Líneas - Tiempos de Reparación
+                </div>
+            </div>
+        </div>
+
+        <div class="export-options">
+            <h3 style="color: var(--primary-color); margin-bottom: 15px;">Exportar Reportes</h3>
+            <button class="export-btn">📥 Exportar a PDF</button>
+            <button class="export-btn">📊 Exportar a Excel</button>
+            <button class="export-btn">🖨️ Imprimir Reporte</button>
+        </div>
+    </div>
+</body>
+</html>

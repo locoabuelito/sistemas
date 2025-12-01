@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Inventarios - Sistema de Gestión</title>
+    <style>
+        /* Variables CSS */
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary-color: #64748b;
+            --accent-color: #f59e0b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --dark-color: #1e293b;
+            --gray-color: #64748b;
+            --light-gray: #e2e8f0;
+            --background-color: #f8fafc;
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        /* Reset y base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-primary);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Enlace volver */
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .header p {
+            color: var(--gray-color);
+            font-size: 1.1rem;
+        }
+
+        /* Estadísticas */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 18px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: var(--gray-color);
+            font-size: 0.8rem;
+        }
+
+        /* Layout principal - AHORA 2 COLUMNAS */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+
+        .card h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        /* Formularios */
+        .form-group {
+            margin-bottom: 18px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: var(--dark-color);
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--light-gray);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        /* Botones */
+        .submit-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            width: 100%;
+            transition: background 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Tablas */
+        .inventario-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            font-size: 0.8rem;
+        }
+
+        .inventario-table th {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 0.75rem;
+        }
+
+        .inventario-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--light-gray);
+            vertical-align: top;
+        }
+
+        .inventario-table tr:hover {
+            background: #f8fafc;
+        }
+
+        /* Badges */
+        .ubicacion-badge {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-right: 4px;
+        }
+
+        .badge-warehouse {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .badge-hydro {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .stock-badge {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .stock-normal {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .stock-critico {
+            background: #fecaca;
+            color: #dc2626;
+        }
+
+        /* Contenedor de tablas */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        /* Scroll personalizado */
+        .table-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        /* Estilos para filtros integrados */
+        .filtros-integrados {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--light-gray);
+            margin-bottom: 20px;
+        }
+
+        .filtro-select, .filtro-input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 2px solid var(--light-gray);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .filtro-select:focus, .filtro-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .filtro-badge {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            margin: 2px 4px;
+            font-weight: bold;
+        }
+
+        .filtro-indicador {
+            display: inline-flex;
+            align-items: center;
+            background: #f0f9ff;
+            color: var(--primary-color);
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            margin: 2px 4px;
+            font-weight: 500;
+            border: 1px solid var(--primary-light);
+        }
+
+        .filtro-indicador .cerrar {
+            margin-left: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 0 4px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            width: 16px;
+            height: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        /* Indicador de carga */
+        .cargando {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            color: var(--primary-color);
+            font-style: italic;
+        }
+
+        .cargando.mostrar {
+            display: block;
+        }
+
+        /* Contador de resultados */
+        .contador-resultados {
+            padding: 8px 12px;
+            background: var(--success-color);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        /* ===== PAGINACIÓN MINIMALISTA ORIGINAL ===== */
+        .pagination-minimalist {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            margin-top: 15px;
+            border-top: 1px solid #e2e8f0;
+            gap: 15px;
+        }
+
+        .pagination-minimalist-solo {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 12px 0;
+            margin-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .pagination-info-mini {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .pagination-stats {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .pagination-nav-mini {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .pagination-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            color: #374151;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .pagination-arrow:hover {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+        }
+
+        .pagination-disabled-mini {
+            background: #f9fafb;
+            color: #9ca3af;
+            border-color: #e5e7eb;
+            cursor: not-allowed;
+        }
+
+        .pagination-disabled-mini:hover {
+            background: #f9fafb;
+            color: #9ca3af;
+            border-color: #e5e7eb;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .pagination-current-mini {
+            font-weight: 600;
+            color: #3b82f6;
+            font-size: 0.9rem;
+        }
+
+        .pagination-separator {
+            color: #6b7280;
+            font-size: 0.8rem;
+        }
+
+        .pagination-total {
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .pagination-size-mini {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .pagination-label {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .items-per-page-mini {
+            padding: 6px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            color: #374151;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 70px;
+        }
+
+        .items-per-page-mini:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .items-per-page-mini:hover {
+            border-color: #3b82f6;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .filtros-grid {
+                grid-template-columns: 1fr 1fr !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .inventario-table {
+                font-size: 0.75rem;
+            }
+            
+            .inventario-table th,
+            .inventario-table td {
+                padding: 8px 6px;
+            }
+            
+            .filtros-grid {
+                grid-template-columns: 1fr !important;
+                gap: 10px !important;
+            }
+            
+            .filtros-integrados {
+                padding: 10px;
+            }
+            
+            .pagination-minimalist {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+            
+            .pagination-nav-mini {
+                order: -1;
+            }
+            
+            .pagination-info-mini {
+                font-size: 0.75rem;
+            }
+            
+            .items-per-page-mini {
+                font-size: 0.75rem;
+                padding: 5px 8px;
+            }
+        }
+
+        /* Contenedor de sugerencias */
+        .sugerencias-container {
+            position: absolute;
+            background: white;
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: none;
+            width: calc(100% - 2px);
+            margin-top: 2px;
+        }
+
+        /* Items de sugerencia */
+        .sugerencia-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--light-gray);
+            font-size: 0.9rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .sugerencia-item:hover {
+            background-color: var(--primary-light);
+            color: white;
+        }
+
+        .sugerencia-item:last-child {
+            border-bottom: none;
+        }
+
+        .sugerencia-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Mejorar el enfoque de los inputs */
+        .form-group input:focus {
+            position: relative;
+            z-index: 1001;
+        }
+
+        /* Estilos para textarea de seriales */
+        .seriales-textarea {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .seriales-help {
+            font-size: 0.75rem;
+            color: var(--gray-color);
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        /* Campo cantidad readonly */
+        .cantidad-readonly {
+            background-color: #f8fafc !important;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/menu-principal/" class="back-link">← Volver al Menú Principal</a>
+        
+        <div class="header">
+            <h1>📦 Control de Inventarios</h1>
+            <p>Gestión completa de inventario de repuestos y materiales</p>
+        </div>
+
+        <!-- Estadísticas ACTUALIZADAS con datos reales -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ total_equipos }}</div>
+                <div class="stat-label">Total Equipos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ equipos_activos }}</div>
+                <div class="stat-label">Equipos Activos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ marcas_unicas }}</div>
+                <div class="stat-label">Marcas Diferentes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ sistemas_unicos }}</div>
+                <div class="stat-label">Tipos de Sistema</div>
+            </div>
+        </div>
+
+        <!-- Contenido Principal - AHORA 2 COLUMNAS -->
+        <div class="main-content">
+            <!-- Columna 1: Registrar Nueva Mercadería (más pequeña) -->
+            <div class="card">
+                <h3>➕ Registrar Nuevo Equipo</h3>
+                <form id="registroForm">
+                    <div class="form-group">
+                        <label for="sistema">Tipo de Sistema:</label>
+                        <select id="sistema" required>
+                            <option value="">Seleccione el sistema</option>
+                            <!-- Opciones dinámicas desde la base de datos -->
+                            {% for sistema in sistemas_reparacion %}
+                                <option value="{{ sistema.id_tipo_sistema }}">{{ sistema.nombre_sistema }}</option>
+                            {% empty %}
+                                <!-- Opciones estáticas como respaldo si no hay datos -->
+                                <option value="warehouse">Reparación Warehouse</option>
+                                <option value="hydro">Reparación Hydro</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tipo-maquina">Objeto/Equipo:</label>
+                        <input type="text" id="tipo-maquina" required placeholder="Ej: ASIC Miner, Servidor, Switch">
+                        <div class="sugerencias-container" id="sugerencias-tipo-maquina"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="marca">Marca:</label>
+                        <input type="text" id="marca" required placeholder="Ej: Bitmain, Cisco, Dell">
+                        <div class="sugerencias-container" id="sugerencias-marca"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modelo">Modelo:</label>
+                        <input type="text" id="modelo" required placeholder="Ej: APW111721c, PowerEdge R740">
+                        <div class="sugerencias-container" id="sugerencias-modelo"></div>
+                    </div>
+
+                    <!-- NUEVO CAMPO PARA SERIALES -->
+                    <div class="form-group">
+                        <label for="seriales">Seriales (uno por línea):</label>
+                        <textarea id="seriales" class="seriales-textarea" 
+                                  placeholder="SN-FUENTE-001&#10;SN-FUENTE-002&#10;SN-FUENTE-003" 
+                                  rows="4"></textarea>
+                        <div class="seriales-help">
+                            Ingrese un serial por línea. Se crearán registros individuales para cada serial.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cantidad">Cantidad (se calculará automáticamente):</label>
+                        <input type="number" id="cantidad" min="1" readonly class="cantidad-readonly" placeholder="Se calculará automáticamente">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stock-minimo">Stock Mínimo:</label>
+                        <input type="number" id="stock-minimo" min="1" max="100" required value="5">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fecha-ingreso">Fecha de Ingreso:</label>
+                        <input type="date" id="fecha-ingreso" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="usuario-registro">Registrado por:</label>
+                        <select id="usuario-registro" required>
+                            <option value="">Seleccione técnico</option>
+                            <!-- Opciones dinámicas desde la base de datos -->
+                            {% for tecnico in tecnicos %}
+                                <option value="{{ tecnico.id_usuario_tecnico }}">
+                                    {{ tecnico.nombre_tecnico }} - {{ tecnico.id_sector_tecnico.nombre_sector  }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="submit-btn">📦 Registrar en Inventario</button>
+                </form>
+            </div>
+
+            <!-- Columna 2: Inventario Actual (más grande) -->
+            <div class="card">
+                <h3>📋 Inventario Actual</h3>
+
+                <!-- FILTROS INTEGRADOS EN TIEMPO REAL - VERSIÓN SIMPLIFICADA -->
+                <div class="filtros-integrados">
+                    <div class="filtros-grid" style="display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <!-- Filtro por Marca -->
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="filtro-marca" style="font-size: 0.85rem; margin-bottom: 5px;">Marca:</label>
+                            <select id="filtro-marca" class="filtro-select">
+                                <option value="">Todas las marcas</option>
+                                {% for marca in todas_marcas %}
+                                    <option value="{{ marca }}" {% if marca_filtro == marca %}selected{% endif %}>{{ marca }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- FILTRO UNIFICADO - Busca en Objeto, Modelo y Serial -->
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="filtro-busqueda" style="font-size: 0.85rem; margin-bottom: 5px;">
+                                🔍 Buscar (Objeto/Modelo/Serial):
+                            </label>
+                            <input type="text" id="filtro-busqueda" 
+                                   placeholder="Ej: Bitmain, APW111721c, SN-FUENTE-001" 
+                                   value="{{ busqueda_filtro }}" class="filtro-input">
+                        </div>
+
+                        <!-- Filtro por Tipo de Sistema -->
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="filtro-sistema" style="font-size: 0.85rem; margin-bottom: 5px;">Tipo Sistema:</label>
+                            <select id="filtro-sistema" class="filtro-select">
+                                <option value="">Todos los sistemas</option>
+                                {% for sistema in todos_sistemas %}
+                                    <option value="{{ sistema.id_tipo_sistema }}" {% if sistema_filtro == sistema.id_tipo_sistema|stringformat:"i" %}selected{% endif %}>
+                                        {{ sistema.nombre_sistema }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Indicadores de filtros activos ACTUALIZADOS -->
+                    <div id="indicadores-filtros" style="margin-top: 10px; min-height: 30px;">
+                        {% if marca_filtro or busqueda_filtro or sistema_filtro %}
+                            {% if marca_filtro %}<span class="filtro-indicador">Marca: {{ marca_filtro }}<span class="cerrar" onclick="removerFiltro('marca')">×</span></span>{% endif %}
+                            {% if busqueda_filtro %}<span class="filtro-indicador">Búsqueda: {{ busqueda_filtro }}<span class="cerrar" onclick="removerFiltro('busqueda')">×</span></span>{% endif %}
+                            {% if sistema_filtro %}
+                                {% for sistema in todos_sistemas %}
+                                    {% if sistema.id_tipo_sistema == sistema_filtro|add:0 %}
+                                        <span class="filtro-indicador">Sistema: {{ sistema.nombre_sistema }}<span class="cerrar" onclick="removerFiltro('sistema')">×</span></span>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                    <!-- Contador de resultados -->
+                    <div class="contador-resultados" id="contador-resultados">
+                        {{ paginator.count }} equipo{{ paginator.count|pluralize }} encontrado{{ paginator.count|pluralize }}
+                    </div>
+
+                    <!-- Indicador de carga -->
+                    <div class="cargando" id="indicador-carga">
+                        🔄 Aplicando filtros...
+                    </div>
+
+                    <!-- PAGINACIÓN MINIMALISTA ORIGINAL - DEBAJO DE LOS FILTROS -->
+                    <div id="pagination-container">
+                        {% if equipos.has_other_pages %}
+                        <div class="pagination-minimalist">
+                            <!-- Información compacta -->
+                            <div class="pagination-info-mini">
+                                <span class="pagination-stats">{{ equipos.start_index }}-{{ equipos.end_index }} de {{ paginator.count }}</span>
+                            </div>
+                            
+                            <!-- Controles de navegación -->
+                            <div class="pagination-nav-mini">
+                                <!-- Anterior -->
+                                {% if equipos.has_previous %}
+                                    <a href="?{% if marca_filtro %}marca={{ marca_filtro }}&{% endif %}{% if busqueda_filtro %}busqueda={{ busqueda_filtro }}&{% endif %}{% if sistema_filtro %}sistema={{ sistema_filtro }}&{% endif %}{% if items_por_pagina != 10 %}items={{ items_por_pagina }}&{% endif %}page={{ equipos.previous_page_number }}" 
+                                    class="pagination-arrow pagination-prev-mini" title="Página anterior">
+                                        ‹
+                                    </a>
+                                {% else %}
+                                    <span class="pagination-arrow pagination-disabled-mini">‹</span>
+                                {% endif %}
+                                
+                                <!-- Página actual -->
+                                <span class="pagination-current-mini">{{ equipos.number }}</span>
+                                <span class="pagination-separator">de</span>
+                                <span class="pagination-total">{{ paginator.num_pages }}</span>
+                                
+                                <!-- Siguiente -->
+                                {% if equipos.has_next %}
+                                    <a href="?{% if marca_filtro %}marca={{ marca_filtro }}&{% endif %}{% if busqueda_filtro %}busqueda={{ busqueda_filtro }}&{% endif %}{% if sistema_filtro %}sistema={{ sistema_filtro }}&{% endif %}{% if items_por_pagina != 10 %}items={{ items_por_pagina }}&{% endif %}page={{ equipos.next_page_number }}" 
+                                    class="pagination-arrow pagination-next-mini" title="Página siguiente">
+                                        ›
+                                    </a>
+                                {% else %}
+                                    <span class="pagination-arrow pagination-disabled-mini">›</span>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Selector minimalista -->
+                            <div class="pagination-size-mini">
+                                <select name="items" class="items-per-page-mini" onchange="cambiarItemsPorPagina(this.value)">
+                                    {% for cantidad in opciones_items %}
+                                        <option value="{{ cantidad }}" {% if items_por_pagina == cantidad %}selected{% endif %}>
+                                            {{ cantidad }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        {% else %}
+                        <!-- Sin paginación - Solo selector -->
+                        <div class="pagination-minimalist-solo">
+                            <div class="pagination-size-mini">
+                                <span class="pagination-label">Mostrar:</span>
+                                <select name="items" class="items-per-page-mini" onchange="cambiarItemsPorPagina(this.value)">
+                                    {% for cantidad in opciones_items %}
+                                        <option value="{{ cantidad }}" {% if items_por_pagina == cantidad %}selected{% endif %}>
+                                            {{ cantidad }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- TABLA DE INVENTARIO -->
+                <div class="table-container">
+                    <table class="inventario-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Objeto/Equipo</th>
+                                <th>Marca</th>
+                                <th>Modelo</th>
+                                <th>Serial</th>
+                                <th>Unidad</th>
+                                <th>Cajas</th>
+                                <th>Tipo Sistema</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaInventario">
+                            {% for equipo in equipos %}
+                            <tr>
+                                <td><strong>{{ equipo.id_equipos }}</strong></td>
+                                <td>{{ equipo.objeto }}</td>
+                                <td>{{ equipo.marca }}</td>
+                                <td>{{ equipo.modelo }}</td>
+                                <td><code>{{ equipo.serial_number }}</code></td>
+                                <td>{{ equipo.cantidad_por_unidad }}</td>
+                                <td>{{ equipo.cantidad_por_cajas }}</td>
+                                <td>
+                                    {% if equipo.id_tipo_sistema %}
+                                        <span class="ubicacion-badge badge-{{ equipo.id_tipo_sistema.nombre_sistema|lower }}">
+                                            {{ equipo.id_tipo_sistema.nombre_sistema }}
+                                        </span>
+                                    {% else %}
+                                        <span style="color: var(--secondary-color);">No asignado</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if equipo.activo_equipos %}
+                                        <span class="stock-badge stock-normal">Activo</span>
+                                    {% else %}
+                                        <span class="stock-badge stock-critico">Inactivo</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="9" style="text-align: center; padding: 20px; color: var(--gray-color);">
+                                    {% if marca_filtro or busqueda_filtro or sistema_filtro %}
+                                        No se encontraron equipos con los filtros aplicados
+                                    {% else %}
+                                        No se encontraron equipos en el inventario
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables para control de filtros
+        let timeoutFiltro;
+        let filtrosActivos = {
+            marca: '{{ marca_filtro }}',
+            busqueda: '{{ busqueda_filtro }}',
+            sistema: '{{ sistema_filtro }}'
+        };
+
+        class AutoCompletador {
+            constructor(inputId, sugerenciasId, datos) {
+                this.input = document.getElementById(inputId);
+                this.sugerenciasContainer = document.getElementById(sugerenciasId);
+                this.datos = datos || [];
+                this.sugerenciasActivas = [];
+                this.indiceSeleccionado = -1;
+                
+                this.inicializar();
+            }
+            
+            inicializar() {
+                // Evento de entrada de texto
+                this.input.addEventListener('input', (e) => {
+                    this.buscarSugerencias(e.target.value);
+                });
+                
+                // Eventos de teclado
+                this.input.addEventListener('keydown', (e) => {
+                    this.manejarTeclado(e);
+                });
+                
+                // Evento de clic fuera para ocultar sugerencias
+                document.addEventListener('click', (e) => {
+                    if (!this.sugerenciasContainer.contains(e.target) && e.target !== this.input) {
+                        this.ocultarSugerencias();
+                    }
+                });
+                
+                // Prevenir que el input pierda el foco al hacer clic en sugerencias
+                this.sugerenciasContainer.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                });
+            }
+            
+            buscarSugerencias(termino) {
+                if (termino.length < 2) {
+                    this.ocultarSugerencias();
+                    return;
+                }
+                
+                const terminoLower = termino.toLowerCase();
+                this.sugerenciasActivas = this.datos.filter(item => 
+                    item && item.toLowerCase().includes(terminoLower)
+                ).slice(0, 8);
+                
+                this.mostrarSugerencias();
+            }
+            
+            mostrarSugerencias() {
+                if (this.sugerenciasActivas.length === 0) {
+                    this.ocultarSugerencias();
+                    return;
+                }
+                
+                const html = this.sugerenciasActivas.map((sugerencia, index) => `
+                    <div class="sugerencia-item ${index === 0 ? 'active' : ''}" 
+                        data-index="${index}"
+                        onclick="autocompletadores['${this.input.id}'].seleccionarSugerencia(${index})">
+                        ${this.resaltarCoincidencia(sugerencia, this.input.value)}
+                    </div>
+                `).join('');
+                
+                this.sugerenciasContainer.innerHTML = html;
+                this.sugerenciasContainer.style.display = 'block';
+                this.indiceSeleccionado = 0;
+            }
+            
+            ocultarSugerencias() {
+                this.sugerenciasContainer.style.display = 'none';
+                this.sugerenciasActivas = [];
+                this.indiceSeleccionado = -1;
+            }
+            
+            resaltarCoincidencia(texto, termino) {
+                if (!termino || !texto) return texto;
+                
+                const regex = new RegExp(`(${this.escapeRegex(termino)})`, 'gi');
+                return texto.replace(regex, '<strong>$1</strong>');
+            }
+            
+            escapeRegex(texto) {
+                return texto.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+            
+            manejarTeclado(e) {
+                switch(e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        this.seleccionarSiguiente();
+                        break;
+                        
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        this.seleccionarAnterior();
+                        break;
+                        
+                    case 'Enter':
+                        if (this.indiceSeleccionado >= 0) {
+                            e.preventDefault();
+                            this.seleccionarSugerencia(this.indiceSeleccionado);
+                        }
+                        break;
+                        
+                    case 'Escape':
+                        this.ocultarSugerencias();
+                        break;
+                }
+            }
+            
+            seleccionarSiguiente() {
+                if (this.indiceSeleccionado < this.sugerenciasActivas.length - 1) {
+                    this.indiceSeleccionado++;
+                    this.actualizarSeleccion();
+                }
+            }
+            
+            seleccionarAnterior() {
+                if (this.indiceSeleccionado > 0) {
+                    this.indiceSeleccionado--;
+                    this.actualizarSeleccion();
+                }
+            }
+            
+            actualizarSeleccion() {
+                const items = this.sugerenciasContainer.querySelectorAll('.sugerencia-item');
+                items.forEach((item, index) => {
+                    item.classList.toggle('active', index === this.indiceSeleccionado);
+                });
+            }
+            
+            seleccionarSugerencia(index) {
+                if (this.sugerenciasActivas[index]) {
+                    this.input.value = this.sugerenciasActivas[index];
+                    this.ocultarSugerencias();
+                    this.input.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            }
+        }
+
+        // Objeto global para los autocompletadores
+        const autocompletadores = {};
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar fecha de ingreso
+            document.getElementById('fecha-ingreso').value = new Date().toISOString().split('T')[0];
+
+            // Obtener datos para autocompletado desde el template
+            const todasMarcas = {{ todas_marcas|safe }};
+            const todosModelos = {{ todos_modelos|safe }};
+            const todosTiposMaquina = {{ todos_tipos_maquina|safe }};
+
+            console.log('Datos cargados para autocompletado:', {
+                marcas: todasMarcas,
+                modelos: todosModelos,
+                tiposMaquina: todosTiposMaquina
+            });
+
+            // Inicializar autocompletadores con datos del servidor
+            autocompletadores['tipo-maquina'] = new AutoCompletador(
+                'tipo-maquina',
+                'sugerencias-tipo-maquina',
+                todosTiposMaquina
+            );
+            
+            autocompletadores['marca'] = new AutoCompletador(
+                'marca',
+                'sugerencias-marca',
+                todasMarcas
+            );
+            
+            autocompletadores['modelo'] = new AutoCompletador(
+                'modelo',
+                'sugerencias-modelo',
+                todosModelos
+            );
+            
+            // Configurar eventos de filtros en tiempo real
+            configurarFiltrosTiempoReal();
+            
+            // Configurar formulario de registro
+            document.getElementById('registroForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                registrarNuevoEquipo();
+            });
+
+            // Configurar eventos de paginación para usar Fetch
+            configurarPaginacionFetch();
+
+            // Configurar cálculo automático de cantidad basado en seriales
+            configurarCalculoCantidad();
+        });
+
+        // Configurar cálculo automático de cantidad
+        function configurarCalculoCantidad() {
+            const textareaSeriales = document.getElementById('seriales');
+            const inputCantidad = document.getElementById('cantidad');
+            
+            textareaSeriales.addEventListener('input', function() {
+                const lineas = this.value.split('\n').filter(serial => serial.trim() !== '');
+                inputCantidad.value = lineas.length;
+            });
+        }
+
+        // Configurar filtros en tiempo real
+        function configurarFiltrosTiempoReal() {
+            // Filtro por marca
+            document.getElementById('filtro-marca').addEventListener('change', function() {
+                filtrosActivos.marca = this.value;
+                aplicarFiltrosConFetch();
+            });
+
+            // FILTRO UNIFICADO - Busca en Objeto, Modelo y Serial (con debounce)
+            document.getElementById('filtro-busqueda').addEventListener('input', function() {
+                clearTimeout(timeoutFiltro);
+                timeoutFiltro = setTimeout(() => {
+                    filtrosActivos.busqueda = this.value;
+                    aplicarFiltrosConFetch();
+                }, 500);
+            });
+
+            // Filtro por sistema
+            document.getElementById('filtro-sistema').addEventListener('change', function() {
+                filtrosActivos.sistema = this.value;
+                aplicarFiltrosConFetch();
+            });
+        }
+
+        // Configurar paginación para usar Fetch
+        function configurarPaginacionFetch() {
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.pagination-arrow') && !e.target.closest('.pagination-disabled-mini')) {
+                    e.preventDefault();
+                    const link = e.target.closest('a');
+                    if (link) {
+                        cargarPaginaConFetch(link.href);
+                    }
+                }
+            });
+
+            document.addEventListener('change', function(e) {
+                if (e.target.classList.contains('items-per-page-mini')) {
+                    e.preventDefault();
+                    cambiarItemsPorPaginaFetch(e.target.value);
+                }
+            });
+        }
+
+        // Aplicar filtros usando Fetch
+        function aplicarFiltrosConFetch() {
+            document.getElementById('indicador-carga').classList.add('mostrar');
+            
+            const params = new URLSearchParams();
+            
+            if (filtrosActivos.marca) params.append('marca', filtrosActivos.marca);
+            if (filtrosActivos.busqueda) params.append('busqueda', filtrosActivos.busqueda);
+            if (filtrosActivos.sistema) params.append('sistema', filtrosActivos.sistema);
+            
+            params.append('items', {{ items_por_pagina }});
+            
+            cargarPaginaConFetch('?' + params.toString());
+        }
+
+        // Cargar página usando Fetch
+        function cargarPaginaConFetch(url) {
+            const scrollPosition = window.scrollY;
+            
+            document.getElementById('indicador-carga').classList.add('mostrar');
+            
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'text/html'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en la respuesta del servidor');
+                }
+                return response.text();
+            })
+            .then(html => {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                
+                const nuevaTabla = tempDiv.querySelector('#tablaInventario');
+                const nuevaPaginacion = tempDiv.querySelector('#pagination-container');
+                const nuevoContador = tempDiv.querySelector('#contador-resultados');
+                const nuevosIndicadores = tempDiv.querySelector('#indicadores-filtros');
+                
+                if (nuevaTabla) {
+                    document.getElementById('tablaInventario').innerHTML = nuevaTabla.innerHTML;
+                }
+                
+                if (nuevaPaginacion) {
+                    document.getElementById('pagination-container').innerHTML = nuevaPaginacion.innerHTML;
+                }
+                
+                if (nuevoContador) {
+                    document.getElementById('contador-resultados').innerHTML = nuevoContador.innerHTML;
+                }
+                
+                if (nuevosIndicadores) {
+                    document.getElementById('indicadores-filtros').innerHTML = nuevosIndicadores.innerHTML;
+                }
+                
+                window.history.pushState({}, '', url);
+                configurarPaginacionFetch();
+                window.scrollTo(0, scrollPosition);
+            })
+            .catch(error => {
+                console.error('Error al cargar la página:', error);
+                window.location.href = url;
+            })
+            .finally(() => {
+                document.getElementById('indicador-carga').classList.remove('mostrar');
+            });
+        }
+
+        // Cambiar items por página usando Fetch
+        function cambiarItemsPorPaginaFetch(cantidad) {
+            const urlParams = new URLSearchParams(window.location.search);
+            let nuevaUrl = '?';
+            
+            if (urlParams.get('marca')) nuevaUrl += `marca=${urlParams.get('marca')}&`;
+            if (urlParams.get('busqueda')) nuevaUrl += `busqueda=${urlParams.get('busqueda')}&`;
+            if (urlParams.get('sistema')) nuevaUrl += `sistema=${urlParams.get('sistema')}&`;
+            
+            nuevaUrl += `items=${cantidad}&page=1`;
+            cargarPaginaConFetch(nuevaUrl);
+        }
+
+        // Función original para cambiar items por página (compatibilidad)
+        window.cambiarItemsPorPagina = function(cantidad) {
+            cambiarItemsPorPaginaFetch(cantidad);
+        };
+
+        // Remover un filtro específico
+        function removerFiltro(tipo) {
+            if (tipo === 'marca') {
+                document.getElementById('filtro-marca').value = '';
+                filtrosActivos.marca = '';
+            } else if (tipo === 'busqueda') {
+                document.getElementById('filtro-busqueda').value = '';
+                filtrosActivos.busqueda = '';
+            } else if (tipo === 'sistema') {
+                document.getElementById('filtro-sistema').value = '';
+                filtrosActivos.sistema = '';
+            }
+            
+            aplicarFiltrosConFetch();
+        }
+
+        // Registrar nuevo equipo (simulación)
+        function registrarNuevoEquipo() {
+            const seriales = document.getElementById('seriales').value;
+            const cantidad = document.getElementById('cantidad').value;
+            const marca = document.getElementById('marca').value;
+            const modelo = document.getElementById('modelo').value;
+            const tipoMaquina = document.getElementById('tipo-maquina').value;
+            const sistema = document.getElementById('sistema').value;
+            const sistemaTexto = document.getElementById('sistema').options[document.getElementById('sistema').selectedIndex].text;
+            const stockMinimo = document.getElementById('stock-minimo').value;
+            const fechaIngreso = document.getElementById('fecha-ingreso').value;
+            const usuario = document.getElementById('usuario-registro').value;
+            
+            // Validaciones básicas
+            if (!tipoMaquina) {
+                alert('Por favor ingrese el tipo de máquina');
+                return;
+            }
+            
+            if (!marca) {
+                alert('Por favor ingrese la marca');
+                return;
+            }
+            
+            if (!modelo) {
+                alert('Por favor ingrese el modelo');
+                return;
+            }
+            
+            if (seriales.trim() === '') {
+                alert('Por favor ingrese al menos un serial');
+                return;
+            }
+            
+            if (!sistema) {
+                alert('Por favor seleccione el sistema de reparación');
+                return;
+            }
+            
+            const lineasSeriales = seriales.split('\n').filter(serial => serial.trim() !== '');
+            
+            if (parseInt(cantidad) !== lineasSeriales.length) {
+                alert('La cantidad no coincide con el número de seriales ingresados');
+                return;
+            }
+            
+            // Mostrar resumen de lo que se va a registrar
+            let mensaje = `✅ Equipo registrado correctamente:\n\n`;
+            mensaje += `Tipo de Máquina: ${tipoMaquina}\n`;
+            mensaje += `Marca: ${marca}\n`;
+            mensaje += `Modelo: ${modelo}\n`;
+            mensaje += `Sistema: ${sistemaTexto}\n`;
+            mensaje += `Stock Mínimo: ${stockMinimo}\n`;
+            mensaje += `Fecha Ingreso: ${fechaIngreso}\n`;
+            mensaje += `Usuario: ${document.getElementById('usuario-registro').options[document.getElementById('usuario-registro').selectedIndex].text}\n`;
+            mensaje += `Seriales: ${lineasSeriales.length}\n\n`;
+            mensaje += `Se crearán ${lineasSeriales.length} registro(s) individual(es) en el inventario.`;
+            
+            alert(mensaje);
+            
+            // Limpiar formulario
+            document.getElementById('registroForm').reset();
+            document.getElementById('fecha-ingreso').value = new Date().toISOString().split('T')[0];
+            document.getElementById('cantidad').value = '0';
+        }
+
+        // Manejar el botón de retroceso/avance del navegador
+        window.addEventListener('popstate', function(event) {
+            cargarPaginaConFetch(window.location.href);
+        });
+    </script>
+</body>
+</html>

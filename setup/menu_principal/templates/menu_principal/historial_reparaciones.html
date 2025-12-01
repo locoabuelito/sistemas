@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Reparaciones - Sistema de Reparaciones</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary-color: #64748b;
+            --accent-color: #f59e0b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --dark-color: #1e293b;
+            --gray-color: #64748b;
+            --light-gray: #e2e8f0;
+            --background-color: #f8fafc;
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .header p {
+            color: var(--gray-color);
+        }
+
+        /* Filtros */
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f0f9ff;
+            border-radius: 10px;
+            border: 2px solid var(--primary-light);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--primary-dark);
+            font-size: 0.9rem;
+        }
+
+        .filter-group select, .filter-group input {
+            padding: 10px;
+            border: 2px solid var(--primary-color);
+            border-radius: 5px;
+            background: white;
+            font-size: 0.9rem;
+        }
+
+        .search-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 25px;
+            transition: background 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .search-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .reset-btn {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 25px;
+            transition: background 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .reset-btn:hover {
+            background: var(--gray-color);
+        }
+
+        /* Estadísticas */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 5px solid var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .stat-card.th-afectados {
+            border-left: 5px solid var(--error-color);
+            background: linear-gradient(135deg, #fff5f5, #fed7d7);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .stat-card.th-afectados .stat-number {
+            color: var(--error-color);
+        }
+
+        .stat-label {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+
+        .stat-subtitle {
+            font-size: 0.75rem;
+            color: var(--secondary-color);
+            margin-top: 5px;
+        }
+
+        /* Indicador de alerta para TH/s afectados */
+        .alert-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 12px;
+            height: 12px;
+            background: var(--error-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Tabla de Historial */
+        .historial-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            font-size: 0.9rem;
+        }
+
+        .historial-table th {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .historial-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--light-gray);
+            vertical-align: top;
+        }
+
+        .historial-table tr:hover {
+            background: #f8fafc;
+        }
+
+        /* NUEVOS COLORES PARA ESTADOS */
+        .status-completado { 
+            color: #10b981; 
+            font-weight: bold;
+            background: #d1fae5;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+
+        .status-proceso { 
+            color: #d97706; 
+            font-weight: bold;
+            background: #fef3c7;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+
+        .status-pendiente { 
+            color: #dc2626; 
+            font-weight: bold;
+            background: #fecaca;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+
+        .status-cancelado { 
+            color: #2563eb; 
+            font-weight: bold;
+            background: #dbeafe;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+
+        /* Badges */
+        .wh-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: var(--primary-light);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .hydro-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: var(--success-color);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .tipo-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        /* Paginación */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .pagination-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--primary-color);
+            background: white;
+            color: var(--primary-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .pagination-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .pagination-info {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .filters {
+                grid-template-columns: 1fr;
+            }
+            
+            .historial-table {
+                font-size: 0.8rem;
+            }
+            
+            .historial-table th,
+            .historial-table td {
+                padding: 8px 6px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+
+        /* Scroll para tabla en móviles */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/menu-principal/" class="back-link">← Volver al Menú Principal</a>
+        
+        <div class="header">
+            <h1>📊 Historial de Reparaciones</h1>
+            <p>Consulta completa de todas las reparaciones realizadas en el sistema</p>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters">
+            <div class="filter-group">
+                <label for="tipo-problema">Tipo de Problema:</label>
+                <select id="tipo-problema">
+                    <option value="">Todos los tipos</option>
+                    <option value="hardware">Falla de Hardware</option>
+                    <option value="software">Error de Software</option>
+                    <option value="red">Problema de Red</option>
+                    <option value="alimentacion">Falla de Alimentación</option>
+                    <option value="temperatura">Problema de Temperatura</option>
+                    <option value="rendimiento">Bajo Rendimiento</option>
+                    <option value="conectividad">Problema de Conectividad</option>
+                    <option value="ventilacion">Falla en Sistema de Ventilación</option>
+                    <option value="otros">Otros</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="ubicacion">Ubicación:</label>
+                <select id="ubicacion">
+                    <option value="">Todas las ubicaciones</option>
+                    <optgroup label="Warehouse">
+                        <option value="WH-01">WH-01</option>
+                        <option value="WH-02">WH-02</option>
+                        <option value="WH-03">WH-03</option>
+                        <option value="WH-04">WH-04</option>
+                        <option value="WH-05">WH-05</option>
+                        <option value="WH-06">WH-06</option>
+                        <option value="WH-07">WH-07</option>
+                        <option value="WH-08">WH-08</option>
+                        <option value="WH-09">WH-09</option>
+                        <option value="WH-10">WH-10</option>
+                    </optgroup>
+                    <optgroup label="Hydro">
+                        <option value="C1">C1</option>
+                        <option value="C2">C2</option>
+                        <option value="C3">C3</option>
+                        <option value="C4">C4</option>
+                        <option value="C5">C5</option>
+                        <option value="C6">C6</option>
+                        <option value="C7">C7</option>
+                        <option value="C8">C8</option>
+                        <option value="C9">C9</option>
+                        <option value="C10">C10</option>
+                        <option value="C11-C20">C11-C20</option>
+                        <option value="C21-C30">C21-C30</option>
+                        <option value="C31-C40">C31-C40</option>
+                        <option value="C41-C50">C41-C50</option>
+                        <option value="C51-C60">C51-C60</option>
+                        <option value="C61-C70">C61-C70</option>
+                        <option value="C71-C80">C71-C80</option>
+                        <option value="C81-C90">C81-C90</option>
+                        <option value="C91-C100">C91-C100</option>
+                        <option value="C101-C110">C101-C110</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="fecha-desde">Desde:</label>
+                <input type="date" id="fecha-desde">
+            </div>
+            
+            <div class="filter-group">
+                <label for="fecha-hasta">Hasta:</label>
+                <input type="date" id="fecha-hasta">
+            </div>
+
+            <div class="filter-group">
+                <label for="estado">Estado:</label>
+                <select id="estado">
+                    <option value="">Todos los estados</option>
+                    <option value="completado">Completado</option>
+                    <option value="proceso">En Proceso</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="cancelado">Cancelado</option>
+                </select>
+            </div>
+
+            <button class="search-btn" onclick="filtrarHistorial()">🔍 Buscar</button>
+            <button class="reset-btn" onclick="resetearFiltros()">🔄 Limpiar</button>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="total-reparaciones">0</div>
+                <div class="stat-label">Total Reparaciones</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completadas">0</div>
+                <div class="stat-label">Completadas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendientes">0</div>
+                <div class="stat-label">Pendientes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="en-proceso">0</div>
+                <div class="stat-label">En Proceso</div>
+            </div>
+            <div class="stat-card th-afectados">
+                <div class="alert-indicator" id="alert-indicator"></div>
+                <div class="stat-number" id="th-afectados">0</div>
+                <div class="stat-label">TH/s Afectados</div>
+                <div class="stat-subtitle">Pendientes + En Proceso</div>
+            </div>
+        </div>
+
+        <!-- Tabla de Historial -->
+        <div class="table-container">
+            <table class="historial-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ubicación</th>
+                        <th>Tipo Máquina</th>
+                        <th>Tipo Problema</th>
+                        <th>TH/s Afectados</th>
+                        <th>Técnico</th>
+                        <th>Fecha Creación</th>
+                        <th>Estado</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaHistorial">
+                    <!-- Los datos se cargarán dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        <div class="pagination">
+            <button class="pagination-btn" onclick="cambiarPagina(-1)">← Anterior</button>
+            <span class="pagination-info" id="infoPagina">Página 1 de 1</span>
+            <button class="pagination-btn" onclick="cambiarPagina(1)">Siguiente →</button>
+        </div>
+    </div>
+
+    <script>
+        // Datos de ejemplo combinando Warehouse y Hydro
+        let historialReparaciones = [
+            // Reparaciones Warehouse (basadas en datos anteriores)
+            {
+                id: "SR-001-151124",
+                ubicacion: "WH-01",
+                tipo: "warehouse",
+                tipoMaquina: "ASIC Miner",
+                tipoProblema: "Falla de Hardware",
+                thCantidad: 85.5,
+                tecnico: "Juan Pérez",
+                descripcion: "Problema con las tarjetas gráficas en el rack 3, se detectaron 5 GPUs fallidas",
+                status: "completado",
+                fecha: "2024-11-15",
+                fechaCreacion: "15/11/2024"
+            },
+            {
+                id: "SR-002-141124",
+                ubicacion: "WH-03",
+                tipo: "warehouse",
+                tipoMaquina: "GPU Rack",
+                tipoProblema: "Error de Software",
+                thCantidad: 120.0,
+                tecnico: "María González",
+                descripcion: "Error en el software de minería, requiere actualización del firmware",
+                status: "completado",
+                fecha: "2024-11-14",
+                fechaCreacion: "14/11/2024"
+            },
+            {
+                id: "SR-003-161124",
+                ubicacion: "WH-07",
+                tipo: "warehouse",
+                tipoMaquina: "Sistema de Enfriamiento",
+                tipoProblema: "Problema de Temperatura",
+                thCantidad: 45.2,
+                tecnico: "Carlos Rodríguez",
+                descripcion: "Sistema de ventilación fallando en el sector B, temperatura elevada",
+                status: "proceso",
+                fecha: "2024-11-16",
+                fechaCreacion: "16/11/2024"
+            },
+            // Reparaciones Hydro (nuevos datos)
+            {
+                id: "SR-004-101124",
+                ubicacion: "C5",
+                tipo: "hydro",
+                tipoMaquina: "Bomba Hidráulica",
+                tipoProblema: "Falla de Hardware",
+                thCantidad: 200.0,
+                tecnico: "Ana López",
+                descripcion: "Bomba principal presentando fallas de presión en el sistema C5",
+                status: "completado",
+                fecha: "2024-11-10",
+                fechaCreacion: "10/11/2024"
+            },
+            {
+                id: "SR-005-121124",
+                ubicacion: "C15",
+                tipo: "hydro",
+                tipoMaquina: "Válvula de Control",
+                tipoProblema: "Problema de Temperatura",
+                thCantidad: 75.5,
+                tecnico: "Luis Martínez",
+                descripcion: "Sobrecalentamiento en válvulas del sector C15-C18",
+                status: "pendiente",
+                fecha: "2024-11-12",
+                fechaCreacion: "12/11/2024"
+            },
+            {
+                id: "SR-006-131124",
+                ubicacion: "C45",
+                tipo: "hydro",
+                tipoMaquina: "Sistema de Filtración",
+                tipoProblema: "Falla de Alimentación",
+                thCantidad: 150.0,
+                tecnico: "Pedro García",
+                descripcion: "Falla en sistema eléctrico que afecta filtros del sector C41-C50",
+                status: "cancelado",
+                fecha: "2024-11-13",
+                fechaCreacion: "13/11/2024"
+            },
+            {
+                id: "SR-007-171124",
+                ubicacion: "WH-02",
+                tipo: "warehouse",
+                tipoMaquina: "Servidor",
+                tipoProblema: "Problema de Red",
+                thCantidad: 90.0,
+                tecnico: "Juan Pérez",
+                descripcion: "Switch principal del WH-02 presentando intermittencia",
+                status: "proceso",
+                fecha: "2024-11-17",
+                fechaCreacion: "17/11/2024"
+            },
+            {
+                id: "SR-008-181124",
+                ubicacion: "C85",
+                tipo: "hydro",
+                tipoMaquina: "Transformador",
+                tipoProblema: "Falla de Alimentación",
+                thCantidad: 300.0,
+                tecnico: "María González",
+                descripcion: "Transformador del sector C81-C90 requiere mantenimiento preventivo",
+                status: "pendiente",
+                fecha: "2024-11-18",
+                fechaCreacion: "18/11/2024"
+            },
+            {
+                id: "SR-009-191124",
+                ubicacion: "WH-05",
+                tipo: "warehouse",
+                tipoMaquina: "Sistema UPS",
+                tipoProblema: "Falla de Alimentación",
+                thCantidad: 180.0,
+                tecnico: "Carlos Rodríguez",
+                descripcion: "UPS principal presentando fallas de carga en el WH-05",
+                status: "completado",
+                fecha: "2024-11-19",
+                fechaCreacion: "19/11/2024"
+            },
+            {
+                id: "SR-010-201124",
+                ubicacion: "C25",
+                tipo: "hydro",
+                tipoMaquina: "Bomba Hidráulica",
+                tipoProblema: "Bajo Rendimiento",
+                thCantidad: 95.0,
+                tecnico: "Ana López",
+                descripcion: "Bomba del sector C25 con bajo rendimiento, requiere calibración",
+                status: "cancelado",
+                fecha: "2024-11-20",
+                fechaCreacion: "20/11/2024"
+            },
+            {
+                id: "SR-011-211124",
+                ubicacion: "WH-04",
+                tipo: "warehouse",
+                tipoMaquina: "GPU Rack",
+                tipoProblema: "Falla de Hardware",
+                thCantidad: 220.5,
+                tecnico: "Luis Martínez",
+                descripcion: "Múltiples GPUs fallando en el rack principal del WH-04",
+                status: "pendiente",
+                fecha: "2024-11-21",
+                fechaCreacion: "21/11/2024"
+            },
+            {
+                id: "SR-012-221124",
+                ubicacion: "C65",
+                tipo: "hydro",
+                tipoMaquina: "Sistema de Filtración",
+                tipoProblema: "Problema de Temperatura",
+                thCantidad: 110.0,
+                tecnico: "Pedro García",
+                descripcion: "Sistema de enfriamiento fallando en el sector C61-C70",
+                status: "proceso",
+                fecha: "2024-11-22",
+                fechaCreacion: "22/11/2024"
+            }
+        ];
+
+        let paginaActual = 1;
+        const elementosPorPagina = 10;
+        let datosFiltrados = [];
+
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            datosFiltrados = [...historialReparaciones];
+            actualizarTabla();
+            actualizarEstadisticas();
+            establecerFechasPorDefecto();
+        });
+
+        // Establecer fechas por defecto (últimos 30 días)
+        function establecerFechasPorDefecto() {
+            const fechaHasta = new Date();
+            const fechaDesde = new Date();
+            fechaDesde.setDate(fechaDesde.getDate() - 30);
+            
+            document.getElementById('fecha-hasta').value = fechaHasta.toISOString().split('T')[0];
+            document.getElementById('fecha-desde').value = fechaDesde.toISOString().split('T')[0];
+        }
+
+        // Filtrar historial
+        function filtrarHistorial() {
+            const tipoProblema = document.getElementById('tipo-problema').value;
+            const ubicacion = document.getElementById('ubicacion').value;
+            const fechaDesde = document.getElementById('fecha-desde').value;
+            const fechaHasta = document.getElementById('fecha-hasta').value;
+            const estado = document.getElementById('estado').value;
+
+            datosFiltrados = historialReparaciones.filter(reparacion => {
+                let cumpleFiltro = true;
+
+                // Filtro por tipo de problema
+                if (tipoProblema && reparacion.tipoProblema !== tipoProblema) {
+                    cumpleFiltro = false;
+                }
+
+                // Filtro por ubicación
+                if (ubicacion) {
+                    if (ubicacion.includes('C') && !reparacion.ubicacion.includes('C')) {
+                        cumpleFiltro = false;
+                    } else if (ubicacion.includes('WH') && !reparacion.ubicacion.includes('WH')) {
+                        cumpleFiltro = false;
+                    } else if (ubicacion.includes('-')) {
+                        // Para rangos como C11-C20
+                        const [inicio, fin] = ubicacion.split('-').map(item => {
+                            const num = parseInt(item.replace('C', ''));
+                            return isNaN(num) ? item : num;
+                        });
+                        const numUbicacion = parseInt(reparacion.ubicacion.replace('C', ''));
+                        if (isNaN(numUbicacion) || numUbicacion < inicio || numUbicacion > fin) {
+                            cumpleFiltro = false;
+                        }
+                    } else if (reparacion.ubicacion !== ubicacion) {
+                        cumpleFiltro = false;
+                    }
+                }
+
+                // Filtro por fecha
+                if (fechaDesde && reparacion.fecha < fechaDesde) {
+                    cumpleFiltro = false;
+                }
+                if (fechaHasta && reparacion.fecha > fechaHasta) {
+                    cumpleFiltro = false;
+                }
+
+                // Filtro por estado
+                if (estado && reparacion.status !== estado) {
+                    cumpleFiltro = false;
+                }
+
+                return cumpleFiltro;
+            });
+
+            paginaActual = 1;
+            actualizarTabla();
+            actualizarEstadisticas();
+        }
+
+        // Resetear filtros
+        function resetearFiltros() {
+            document.getElementById('tipo-problema').value = '';
+            document.getElementById('ubicacion').value = '';
+            document.getElementById('estado').value = '';
+            establecerFechasPorDefecto();
+            
+            datosFiltrados = [...historialReparaciones];
+            paginaActual = 1;
+            actualizarTabla();
+            actualizarEstadisticas();
+        }
+
+        // Actualizar tabla
+        function actualizarTabla() {
+            const tbody = document.getElementById('tablaHistorial');
+            tbody.innerHTML = '';
+
+            const inicio = (paginaActual - 1) * elementosPorPagina;
+            const fin = inicio + elementosPorPagina;
+            const datosPagina = datosFiltrados.slice(inicio, fin);
+
+            if (datosPagina.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 40px; color: var(--gray-color);">
+                            No se encontraron reparaciones que coincidan con los filtros seleccionados.
+                        </td>
+                    </tr>
+                `;
+            } else {
+                datosPagina.forEach(reparacion => {
+                    const badge = reparacion.tipo === 'warehouse' 
+                        ? `<span class="wh-badge">${reparacion.ubicacion}</span>`
+                        : `<span class="hydro-badge">${reparacion.ubicacion}</span>`;
+
+                    const statusClass = `status-${reparacion.status}`;
+                    const statusText = {
+                        'completado': 'COMPLETADO',
+                        'pendiente': 'PENDIENTE',
+                        'proceso': 'EN PROCESO',
+                        'cancelado': 'CANCELADO'
+                    }[reparacion.status] || reparacion.status;
+
+                    const fila = `
+                        <tr>
+                            <td><strong>${reparacion.id}</strong></td>
+                            <td>${badge}</td>
+                            <td><span class="tipo-badge">${reparacion.tipoMaquina}</span></td>
+                            <td>${reparacion.tipoProblema}</td>
+                            <td><strong>${reparacion.thCantidad} TH/s</strong></td>
+                            <td>${reparacion.tecnico}</td>
+                            <td>${reparacion.fechaCreacion}</td>
+                            <td><span class="${statusClass}">${statusText}</span></td>
+                            <td style="max-width: 200px;">${reparacion.descripcion}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += fila;
+                });
+            }
+
+            // Actualizar información de paginación
+            const totalPaginas = Math.ceil(datosFiltrados.length / elementosPorPagina);
+            document.getElementById('infoPagina').textContent = 
+                `Página ${paginaActual} de ${totalPaginas} (${datosFiltrados.length} resultados)`;
+        }
+
+        // Cambiar página
+        function cambiarPagina(direccion) {
+            const totalPaginas = Math.ceil(datosFiltrados.length / elementosPorPagina);
+            paginaActual += direccion;
+            
+            if (paginaActual < 1) paginaActual = 1;
+            if (paginaActual > totalPaginas) paginaActual = totalPaginas;
+            
+            actualizarTabla();
+        }
+
+        // Actualizar estadísticas
+        function actualizarEstadisticas() {
+            const total = datosFiltrados.length;
+            const completadas = datosFiltrados.filter(r => r.status === 'completado').length;
+            const pendientes = datosFiltrados.filter(r => r.status === 'pendiente').length;
+            const enProceso = datosFiltrados.filter(r => r.status === 'proceso').length;
+            const canceladas = datosFiltrados.filter(r => r.status === 'cancelado').length;
+
+            // Calcular TH/s afectados (solo pendientes y en proceso)
+            const thAfectados = datosFiltrados
+                .filter(r => r.status === 'pendiente' || r.status === 'proceso')
+                .reduce((sum, r) => sum + r.thCantidad, 0);
+
+            document.getElementById('total-reparaciones').textContent = total;
+            document.getElementById('completadas').textContent = completadas;
+            document.getElementById('pendientes').textContent = pendientes;
+            document.getElementById('en-proceso').textContent = enProceso;
+            document.getElementById('th-afectados').textContent = thAfectados.toFixed(1);
+
+            // Mostrar/ocultar indicador de alerta si hay TH/s afectados
+            const alertIndicator = document.getElementById('alert-indicator');
+            if (thAfectados > 0) {
+                alertIndicator.style.display = 'block';
+            } else {
+                alertIndicator.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

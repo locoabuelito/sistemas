@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reparación Hydro - Sistema de Reparaciones</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary-color: #64748b;
+            --accent-color: #f59e0b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --dark-color: #1e293b;
+            --gray-color: #64748b;
+            --light-gray: #e2e8f0;
+            --background-color: #f8fafc;
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .header p {
+            color: var(--gray-color);
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .card li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .card li:before {
+            content: "💧 ";
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+
+        .system-status {
+            background: #f0f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 2px solid var(--primary-color);
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #bfdbfe;
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/menu-principal/" class="back-link">← Volver al Menú Principal</a>
+        
+        <div class="header">
+            <h1>💧 Reparación Hydro</h1>
+            <p>Sistema especializado para reparaciones de equipos hidráulicos</p>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <h3>Equipos Hidráulicos</h3>
+                <ul>
+                    <li>Bombas hidráulicas</li>
+                    <li>Cilindros y actuadores</li>
+                    <li>Válvulas de control</li>
+                    <li>Sistemas de filtración</li>
+                    <li>Unidades de potencia</li>
+                    <li>Accesorios y conexiones</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Servicios Especializados</h3>
+                <ul>
+                    <li>Diagnóstico de presión</li>
+                    <li>Análisis de fluidos</li>
+                    <li>Pruebas de estanqueidad</li>
+                    <li>Calibración de válvulas</li>
+                    <li>Limpieza de sistemas</li>
+                    <li>Mantenimiento preventivo</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="system-status">
+            <h3 style="color: var(--primary-color); margin-bottom: 15px;">📊 Estado del Sistema Hydro</h3>
+            <div class="status-item">
+                <span>Presión del sistema:</span>
+                <span style="color: var(--success-color); font-weight: bold;">Normal</span>
+            </div>
+            <div class="status-item">
+                <span>Temperatura:</span>
+                <span style="color: var(--warning-color); font-weight: bold;">Estable</span>
+            </div>
+            <div class="status-item">
+                <span>Nivel de fluido:</span>
+                <span style="color: var(--success-color); font-weight: bold;">Óptimo</span>
+            </div>
+            <div class="status-item">
+                <span>Filtros activos:</span>
+                <span style="color: var(--success-color); font-weight: bold;">12/15</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
