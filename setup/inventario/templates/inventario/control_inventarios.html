@@ -111,7 +111,7 @@
             font-size: 0.8rem;
         }
 
-        /* Layout principal - AHORA 2 COLUMNAS */
+        /* Layout principal - 2 COLUMNAS */
         .main-content {
             display: grid;
             grid-template-columns: 1fr 2fr;
@@ -372,7 +372,7 @@
             margin-bottom: 10px;
         }
 
-        /* ===== PAGINACIÓN MINIMALISTA ORIGINAL ===== */
+        /* ===== PAGINACIÓN MINIMALISTA ===== */
         .pagination-minimalist {
             display: flex;
             justify-content: space-between;
@@ -506,7 +506,6 @@
             .main-content {
                 grid-template-columns: 1fr;
             }
-            
             .filtros-grid {
                 grid-template-columns: 1fr 1fr !important;
             }
@@ -516,47 +515,37 @@
             .main-content {
                 grid-template-columns: 1fr;
             }
-            
             .container {
                 padding: 15px;
             }
-            
             .card {
                 padding: 20px;
             }
-            
             .inventario-table {
                 font-size: 0.75rem;
             }
-            
             .inventario-table th,
             .inventario-table td {
                 padding: 8px 6px;
             }
-            
             .filtros-grid {
                 grid-template-columns: 1fr !important;
                 gap: 10px !important;
             }
-            
             .filtros-integrados {
                 padding: 10px;
             }
-            
             .pagination-minimalist {
                 flex-direction: column;
                 gap: 12px;
                 text-align: center;
             }
-            
             .pagination-nav-mini {
                 order: -1;
             }
-            
             .pagination-info-mini {
                 font-size: 0.75rem;
             }
-            
             .items-per-page-mini {
                 font-size: 0.75rem;
                 padding: 5px 8px;
@@ -620,6 +609,14 @@
             margin-top: 4px;
             font-style: italic;
         }
+        
+        .seriales-help a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .seriales-help a:hover {
+            text-decoration: underline;
+        }
 
         /* Campo cantidad readonly */
         .cantidad-readonly {
@@ -637,7 +634,6 @@
             <p>Gestión completa de inventario de repuestos y materiales</p>
         </div>
 
-        <!-- Estadísticas ACTUALIZADAS con datos reales -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-number">{{ total_equipos }}</div>
@@ -657,95 +653,125 @@
             </div>
         </div>
 
-        <!-- Contenido Principal - AHORA 2 COLUMNAS -->
         <div class="main-content">
-            <!-- Columna 1: Registrar Nueva Mercadería (más pequeña) -->
-            <div class="card">
-                <h3>➕ Registrar Nuevo Equipo</h3>
-                <form id="registroForm">
-                    <div class="form-group">
-                        <label for="sistema">Tipo de Sistema:</label>
-                        <select id="sistema" required>
-                            <option value="">Seleccione el sistema</option>
-                            <!-- Opciones dinámicas desde la base de datos -->
-                            {% for sistema in sistemas_reparacion %}
-                                <option value="{{ sistema.id_tipo_sistema }}">{{ sistema.nombre_sistema }}</option>
-                            {% empty %}
-                                <!-- Opciones estáticas como respaldo si no hay datos -->
-                                <option value="warehouse">Reparación Warehouse</option>
-                                <option value="hydro">Reparación Hydro</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="tipo-maquina">Objeto/Equipo:</label>
-                        <input type="text" id="tipo-maquina" required placeholder="Ej: ASIC Miner, Servidor, Switch">
-                        <div class="sugerencias-container" id="sugerencias-tipo-maquina"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="marca">Marca:</label>
-                        <input type="text" id="marca" required placeholder="Ej: Bitmain, Cisco, Dell">
-                        <div class="sugerencias-container" id="sugerencias-marca"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="modelo">Modelo:</label>
-                        <input type="text" id="modelo" required placeholder="Ej: APW111721c, PowerEdge R740">
-                        <div class="sugerencias-container" id="sugerencias-modelo"></div>
-                    </div>
-
-                    <!-- NUEVO CAMPO PARA SERIALES -->
-                    <div class="form-group">
-                        <label for="seriales">Seriales (uno por línea):</label>
-                        <textarea id="seriales" class="seriales-textarea" 
-                                  placeholder="SN-FUENTE-001&#10;SN-FUENTE-002&#10;SN-FUENTE-003" 
-                                  rows="4"></textarea>
-                        <div class="seriales-help">
-                            Ingrese un serial por línea. Se crearán registros individuales para cada serial.
+            
+            <div>
+                <div class="card" style="margin-bottom: 25px;">
+                    <h3>📍 Crear Nueva Ubicación</h3>
+                    <form id="ubicacionForm">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <label for="ubi-sistema">Sistema:</label>
+                            <select id="ubi-sistema" required>
+                                <option value="">Seleccione sistema</option>
+                                {% for sistema in sistemas_reparacion %}
+                                    <option value="{{ sistema.id_tipo_sistema }}">{{ sistema.nombre_sistema }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="cantidad">Cantidad (se calculará automáticamente):</label>
-                        <input type="number" id="cantidad" min="1" readonly class="cantidad-readonly" placeholder="Se calculará automáticamente">
-                    </div>
+                        <div class="form-group">
+                            <label for="ubi-pallet">Pallet / Estante:</label>
+                            <input type="text" id="ubi-pallet" required placeholder="Ej: 1, A, B3">
+                        </div>
 
-                    <div class="form-group">
-                        <label for="stock-minimo">Stock Mínimo:</label>
-                        <input type="number" id="stock-minimo" min="1" max="100" required value="5">
-                    </div>
+                        <div class="form-group">
+                            <label for="ubi-caja">Caja / Nivel:</label>
+                            <input type="text" id="ubi-caja" required placeholder="Ej: 15, 20, Nivel 1">
+                        </div>
 
-                    <div class="form-group">
-                        <label for="fecha-ingreso">Fecha de Ingreso:</label>
-                        <input type="date" id="fecha-ingreso" required>
-                    </div>
+                        <button type="submit" class="submit-btn" style="background-color: var(--primary-color);">
+                            💾 Guardar Ubicación
+                        </button>
+                    </form>
+                </div>
 
-                    <div class="form-group">
-                        <label for="usuario-registro">Registrado por:</label>
-                        <select id="usuario-registro" required>
-                            <option value="">Seleccione técnico</option>
-                            <!-- Opciones dinámicas desde la base de datos -->
-                            {% for tecnico in tecnicos %}
-                                <option value="{{ tecnico.id_usuario_tecnico }}">
-                                    {{ tecnico.nombre_tecnico }} - {{ tecnico.id_sector_tecnico.nombre_sector  }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <button type="submit" class="submit-btn">📦 Registrar en Inventario</button>
-                </form>
+                <div class="card">
+                    <h3>➕ Registrar Nuevo Equipo</h3>
+                    <form id="registroForm">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="sistema">Tipo de Sistema:</label>
+                            <select id="sistema" required>
+                                <option value="">Seleccione el sistema</option>
+                                {% for sistema in sistemas_reparacion %}
+                                    <option value="{{ sistema.id_tipo_sistema }}">{{ sistema.nombre_sistema }}</option>
+                                {% empty %}
+                                    <option value="warehouse">Reparación Warehouse</option>
+                                    <option value="hydro">Reparación Hydro</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        {% comment %}{% endcomment %}
+                        <div class="form-group">
+                            <label for="ubicacion">Ubicación en Depósito:</label>
+                            <select id="ubicacion" name="ubicacion" required>
+                                <option value="">Seleccione una ubicación</option>
+                                
+                                {% for ubicacion in ubicaciones_deposito %}
+                                    <option value="{{ ubicacion.id_ubicacion_deposito }}">
+                                        Pallet: {{ ubicacion.nombre_pallet }} / Caja: {{ ubicacion.nombre_caja }}
+                                    </option>
+                                {% empty %}
+                                    <option value="" disabled>No hay ubicaciones registradas</option>
+                                {% endfor %}
+                                
+                            </select>
+                            <div class="seriales-help">
+                                <a href="#" onclick="document.getElementById('ubi-pallet').focus(); return false;">¿No existe la ubicación? Créela en el panel superior.</a>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tipo-maquina">Objeto/Equipo:</label>
+                            <input type="text" id="tipo-maquina" required placeholder="Ej: ASIC Miner, Servidor, Switch">
+                            <div class="sugerencias-container" id="sugerencias-tipo-maquina"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="marca">Marca:</label>
+                            <input type="text" id="marca" required placeholder="Ej: Bitmain, Cisco, Dell">
+                            <div class="sugerencias-container" id="sugerencias-marca"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="modelo">Modelo:</label>
+                            <input type="text" id="modelo" required placeholder="Ej: APW111721c, PowerEdge R740">
+                            <div class="sugerencias-container" id="sugerencias-modelo"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="seriales">Seriales (uno por línea):</label>
+                            <textarea id="seriales" class="seriales-textarea" 
+                                      placeholder="SN-FUENTE-001&#10;SN-FUENTE-002&#10;SN-FUENTE-003" 
+                                      rows="4"></textarea>
+                            <div class="seriales-help">
+                                Ingrese un serial por línea. Se crearán registros individuales para cada serial.
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cantidad">Cantidad (se calculará automáticamente):</label>
+                            <input type="number" id="cantidad" min="1" readonly class="cantidad-readonly" placeholder="Se calculará automáticamente">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="stock-minimo">Stock Mínimo:</label>
+                            <input type="number" id="stock-minimo" min="1" max="100" required value="5">
+                        </div>
+
+                        <button type="submit" class="submit-btn">📦 Registrar en Inventario</button>
+                    </form>
+                </div>
             </div>
 
-            <!-- Columna 2: Inventario Actual (más grande) -->
             <div class="card">
                 <h3>📋 Inventario Actual</h3>
 
-                <!-- FILTROS INTEGRADOS EN TIEMPO REAL - VERSIÓN SIMPLIFICADA -->
                 <div class="filtros-integrados">
                     <div class="filtros-grid" style="display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 15px; margin-bottom: 15px;">
-                        <!-- Filtro por Marca -->
                         <div class="form-group" style="margin-bottom: 0;">
                             <label for="filtro-marca" style="font-size: 0.85rem; margin-bottom: 5px;">Marca:</label>
                             <select id="filtro-marca" class="filtro-select">
@@ -756,7 +782,6 @@
                             </select>
                         </div>
 
-                        <!-- FILTRO UNIFICADO - Busca en Objeto, Modelo y Serial -->
                         <div class="form-group" style="margin-bottom: 0;">
                             <label for="filtro-busqueda" style="font-size: 0.85rem; margin-bottom: 5px;">
                                 🔍 Buscar (Objeto/Modelo/Serial):
@@ -766,13 +791,13 @@
                                    value="{{ busqueda_filtro }}" class="filtro-input">
                         </div>
 
-                        <!-- Filtro por Tipo de Sistema -->
                         <div class="form-group" style="margin-bottom: 0;">
                             <label for="filtro-sistema" style="font-size: 0.85rem; margin-bottom: 5px;">Tipo Sistema:</label>
                             <select id="filtro-sistema" class="filtro-select">
                                 <option value="">Todos los sistemas</option>
-                                {% for sistema in todos_sistemas %}
-                                    <option value="{{ sistema.id_tipo_sistema }}" {% if sistema_filtro == sistema.id_tipo_sistema|stringformat:"i" %}selected{% endif %}>
+                                {% for sistema in sistemas_reparacion %}
+                                    <option value="{{ sistema.id_tipo_sistema }}" 
+                                        {% if sistema_filtro == sistema.id_tipo_sistema|stringformat:"i" %}selected{% endif %}>
                                         {{ sistema.nombre_sistema }}
                                     </option>
                                 {% endfor %}
@@ -780,7 +805,6 @@
                         </div>
                     </div>
 
-                    <!-- Indicadores de filtros activos ACTUALIZADOS -->
                     <div id="indicadores-filtros" style="margin-top: 10px; min-height: 30px;">
                         {% if marca_filtro or busqueda_filtro or sistema_filtro %}
                             {% if marca_filtro %}<span class="filtro-indicador">Marca: {{ marca_filtro }}<span class="cerrar" onclick="removerFiltro('marca')">×</span></span>{% endif %}
@@ -795,74 +819,56 @@
                         {% endif %}
                     </div>
 
-                    <!-- Contador de resultados -->
                     <div class="contador-resultados" id="contador-resultados">
                         {{ paginator.count }} equipo{{ paginator.count|pluralize }} encontrado{{ paginator.count|pluralize }}
                     </div>
 
-                    <!-- Indicador de carga -->
                     <div class="cargando" id="indicador-carga">
                         🔄 Aplicando filtros...
                     </div>
 
-                    <!-- PAGINACIÓN MINIMALISTA ORIGINAL - DEBAJO DE LOS FILTROS -->
                     <div id="pagination-container">
                         {% if equipos.has_other_pages %}
                         <div class="pagination-minimalist">
-                            <!-- Información compacta -->
                             <div class="pagination-info-mini">
                                 <span class="pagination-stats">{{ equipos.start_index }}-{{ equipos.end_index }} de {{ paginator.count }}</span>
                             </div>
                             
-                            <!-- Controles de navegación -->
                             <div class="pagination-nav-mini">
-                                <!-- Anterior -->
                                 {% if equipos.has_previous %}
                                     <a href="?{% if marca_filtro %}marca={{ marca_filtro }}&{% endif %}{% if busqueda_filtro %}busqueda={{ busqueda_filtro }}&{% endif %}{% if sistema_filtro %}sistema={{ sistema_filtro }}&{% endif %}{% if items_por_pagina != 10 %}items={{ items_por_pagina }}&{% endif %}page={{ equipos.previous_page_number }}" 
-                                    class="pagination-arrow pagination-prev-mini" title="Página anterior">
-                                        ‹
-                                    </a>
+                                       class="pagination-arrow pagination-prev-mini" title="Página anterior">‹</a>
                                 {% else %}
                                     <span class="pagination-arrow pagination-disabled-mini">‹</span>
                                 {% endif %}
                                 
-                                <!-- Página actual -->
                                 <span class="pagination-current-mini">{{ equipos.number }}</span>
                                 <span class="pagination-separator">de</span>
                                 <span class="pagination-total">{{ paginator.num_pages }}</span>
                                 
-                                <!-- Siguiente -->
                                 {% if equipos.has_next %}
                                     <a href="?{% if marca_filtro %}marca={{ marca_filtro }}&{% endif %}{% if busqueda_filtro %}busqueda={{ busqueda_filtro }}&{% endif %}{% if sistema_filtro %}sistema={{ sistema_filtro }}&{% endif %}{% if items_por_pagina != 10 %}items={{ items_por_pagina }}&{% endif %}page={{ equipos.next_page_number }}" 
-                                    class="pagination-arrow pagination-next-mini" title="Página siguiente">
-                                        ›
-                                    </a>
+                                       class="pagination-arrow pagination-next-mini" title="Página siguiente">›</a>
                                 {% else %}
                                     <span class="pagination-arrow pagination-disabled-mini">›</span>
                                 {% endif %}
                             </div>
                             
-                            <!-- Selector minimalista -->
                             <div class="pagination-size-mini">
                                 <select name="items" class="items-per-page-mini" onchange="cambiarItemsPorPagina(this.value)">
                                     {% for cantidad in opciones_items %}
-                                        <option value="{{ cantidad }}" {% if items_por_pagina == cantidad %}selected{% endif %}>
-                                            {{ cantidad }}
-                                        </option>
+                                        <option value="{{ cantidad }}" {% if items_por_pagina == cantidad %}selected{% endif %}>{{ cantidad }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                         </div>
                         {% else %}
-                        <!-- Sin paginación - Solo selector -->
                         <div class="pagination-minimalist-solo">
                             <div class="pagination-size-mini">
                                 <span class="pagination-label">Mostrar:</span>
                                 <select name="items" class="items-per-page-mini" onchange="cambiarItemsPorPagina(this.value)">
                                     {% for cantidad in opciones_items %}
-                                        <option value="{{ cantidad }}" {% if items_por_pagina == cantidad %}selected{% endif %}>
-                                            {{ cantidad }}
-                                        </option>
+                                        <option value="{{ cantidad }}" {% if items_por_pagina == cantidad %}selected{% endif %}>{{ cantidad }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -871,56 +877,59 @@
                     </div>
                 </div>
 
-                <!-- TABLA DE INVENTARIO -->
                 <div class="table-container">
                     <table class="inventario-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Objeto/Equipo</th>
                                 <th>Marca</th>
                                 <th>Modelo</th>
-                                <th>Serial</th>
-                                <th>Unidad</th>
-                                <th>Cajas</th>
-                                <th>Tipo Sistema</th>
-                                <th>Estado</th>
+                                <th>Stock Mín.</th>
+                                <th>Cantidad Total</th>
+                                <th>Estado Stock</th>
+                                <th>Sistema</th>
                             </tr>
                         </thead>
                         <tbody id="tablaInventario">
                             {% for equipo in equipos %}
                             <tr>
-                                <td><strong>{{ equipo.id_equipos }}</strong></td>
-                                <td>{{ equipo.objeto }}</td>
-                                <td>{{ equipo.marca }}</td>
-                                <td>{{ equipo.modelo }}</td>
-                                <td><code>{{ equipo.serial_number }}</code></td>
-                                <td>{{ equipo.cantidad_por_unidad }}</td>
-                                <td>{{ equipo.cantidad_por_cajas }}</td>
                                 <td>
-                                    {% if equipo.id_tipo_sistema %}
-                                        <span class="ubicacion-badge badge-{{ equipo.id_tipo_sistema.nombre_sistema|lower }}">
-                                            {{ equipo.id_tipo_sistema.nombre_sistema }}
-                                        </span>
+                                    <span style="font-weight: bold; color: var(--dark-color);">
+                                        {{ equipo.objeto }}
+                                    </span>
+                                </td>
+
+                                <td>{{ equipo.marca }}</td>
+
+                                <td>{{ equipo.modelo }}</td>
+
+                                <td>{{ equipo.stock_min }}</td>
+
+                                <td>
+                                    <span style="font-size: 1.1rem; font-weight: bold; color: var(--primary-color);">
+                                        {{ equipo.cantidad }}
+                                    </span>
+                                    <span style="font-size: 0.8rem; color: #64748b;">unidades</span>
+                                </td>
+
+                                <td>
+                                    {% if equipo.cantidad <= equipo.stock_min %}
+                                        <span class="stock-badge stock-critico">⚠️ Stock Bajo</span>
                                     {% else %}
-                                        <span style="color: var(--secondary-color);">No asignado</span>
+                                        <span class="stock-badge stock-normal">✅ Normal</span>
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if equipo.activo_equipos %}
-                                        <span class="stock-badge stock-normal">Activo</span>
-                                    {% else %}
-                                        <span class="stock-badge stock-critico">Inactivo</span>
-                                    {% endif %}
+                                    {{ equipo.id_tipo_sistema__nombre_sistema|default:"No asignado" }}
                                 </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="9" style="text-align: center; padding: 20px; color: var(--gray-color);">
+                                <td colspan="6" style="text-align: center; padding: 30px; color: var(--gray-color);">
                                     {% if marca_filtro or busqueda_filtro or sistema_filtro %}
-                                        No se encontraron equipos con los filtros aplicados
+                                        <p>🚫 No se encontraron equipos con esos filtros.</p>
                                     {% else %}
-                                        No se encontraron equipos en el inventario
+                                        <p>📂 El inventario está vacío.</p>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -954,26 +963,27 @@
             
             inicializar() {
                 // Evento de entrada de texto
-                this.input.addEventListener('input', (e) => {
-                    this.buscarSugerencias(e.target.value);
-                });
+                if(this.input) {
+                    this.input.addEventListener('input', (e) => {
+                        this.buscarSugerencias(e.target.value);
+                    });
+                    
+                    this.input.addEventListener('keydown', (e) => {
+                        this.manejarTeclado(e);
+                    });
+                }
                 
-                // Eventos de teclado
-                this.input.addEventListener('keydown', (e) => {
-                    this.manejarTeclado(e);
-                });
-                
-                // Evento de clic fuera para ocultar sugerencias
                 document.addEventListener('click', (e) => {
-                    if (!this.sugerenciasContainer.contains(e.target) && e.target !== this.input) {
+                    if (this.sugerenciasContainer && !this.sugerenciasContainer.contains(e.target) && e.target !== this.input) {
                         this.ocultarSugerencias();
                     }
                 });
                 
-                // Prevenir que el input pierda el foco al hacer clic en sugerencias
-                this.sugerenciasContainer.addEventListener('mousedown', (e) => {
-                    e.preventDefault();
-                });
+                if(this.sugerenciasContainer) {
+                    this.sugerenciasContainer.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                    });
+                }
             }
             
             buscarSugerencias(termino) {
@@ -1010,14 +1020,15 @@
             }
             
             ocultarSugerencias() {
-                this.sugerenciasContainer.style.display = 'none';
-                this.sugerenciasActivas = [];
-                this.indiceSeleccionado = -1;
+                if(this.sugerenciasContainer) {
+                    this.sugerenciasContainer.style.display = 'none';
+                    this.sugerenciasActivas = [];
+                    this.indiceSeleccionado = -1;
+                }
             }
             
             resaltarCoincidencia(texto, termino) {
                 if (!termino || !texto) return texto;
-                
                 const regex = new RegExp(`(${this.escapeRegex(termino)})`, 'gi');
                 return texto.replace(regex, '<strong>$1</strong>');
             }
@@ -1032,19 +1043,16 @@
                         e.preventDefault();
                         this.seleccionarSiguiente();
                         break;
-                        
                     case 'ArrowUp':
                         e.preventDefault();
                         this.seleccionarAnterior();
                         break;
-                        
                     case 'Enter':
                         if (this.indiceSeleccionado >= 0) {
                             e.preventDefault();
                             this.seleccionarSugerencia(this.indiceSeleccionado);
                         }
                         break;
-                        
                     case 'Escape':
                         this.ocultarSugerencias();
                         break;
@@ -1084,101 +1092,168 @@
         // Objeto global para los autocompletadores
         const autocompletadores = {};
 
-        // Inicializar la aplicación
+        // === INICIALIZACIÓN DE LA APLICACIÓN ===
         document.addEventListener('DOMContentLoaded', function() {
-            // Configurar fecha de ingreso
-            document.getElementById('fecha-ingreso').value = new Date().toISOString().split('T')[0];
+            console.log("✅ DOM cargado - Iniciando scripts");
 
-            // Obtener datos para autocompletado desde el template
+            // 1. Configurar fecha de ingreso
+            const fechaInput = document.getElementById('fecha-ingreso');
+            if(fechaInput) fechaInput.value = new Date().toISOString().split('T')[0];
+
+            // 2. Obtener datos para autocompletado
             const todasMarcas = {{ todas_marcas|safe }};
             const todosModelos = {{ todos_modelos|safe }};
             const todosTiposMaquina = {{ todos_tipos_maquina|safe }};
 
-            console.log('Datos cargados para autocompletado:', {
-                marcas: todasMarcas,
-                modelos: todosModelos,
-                tiposMaquina: todosTiposMaquina
-            });
-
-            // Inicializar autocompletadores con datos del servidor
-            autocompletadores['tipo-maquina'] = new AutoCompletador(
-                'tipo-maquina',
-                'sugerencias-tipo-maquina',
-                todosTiposMaquina
-            );
+            // 3. Inicializar autocompletadores
+            if(document.getElementById('tipo-maquina')) 
+                autocompletadores['tipo-maquina'] = new AutoCompletador('tipo-maquina', 'sugerencias-tipo-maquina', todosTiposMaquina);
             
-            autocompletadores['marca'] = new AutoCompletador(
-                'marca',
-                'sugerencias-marca',
-                todasMarcas
-            );
+            if(document.getElementById('marca')) 
+                autocompletadores['marca'] = new AutoCompletador('marca', 'sugerencias-marca', todasMarcas);
             
-            autocompletadores['modelo'] = new AutoCompletador(
-                'modelo',
-                'sugerencias-modelo',
-                todosModelos
-            );
+            if(document.getElementById('modelo')) 
+                autocompletadores['modelo'] = new AutoCompletador('modelo', 'sugerencias-modelo', todosModelos);
             
-            // Configurar eventos de filtros en tiempo real
+            // 4. Configurar eventos
             configurarFiltrosTiempoReal();
-            
-            // Configurar formulario de registro
-            document.getElementById('registroForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                registrarNuevoEquipo();
-            });
-
-            // Configurar eventos de paginación para usar Fetch
             configurarPaginacionFetch();
-
-            // Configurar cálculo automático de cantidad basado en seriales
             configurarCalculoCantidad();
+            
+            // 5. Formulario de REGISTRO DE EQUIPOS
+            const registroForm = document.getElementById('registroForm');
+            if (registroForm) {
+                registroForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    registrarNuevoEquipo();
+                });
+            }
+
+            // 6. Formulario de CREAR UBICACIÓN (NUEVO)
+            const formUbicacion = document.getElementById('ubicacionForm');
+            if (formUbicacion) {
+                console.log("✅ Formulario de ubicación encontrado");
+                formUbicacion.addEventListener('submit', function(e) {
+                    e.preventDefault(); 
+                    crearNuevaUbicacion();
+                });
+            } else {
+                console.warn("⚠️ No se encontró el formulario de ubicación");
+            }
         });
 
-        // Configurar cálculo automático de cantidad
+        // === FUNCIONES ===
+
+        function crearNuevaUbicacion() {
+            console.log("🚀 Iniciando proceso de guardado de ubicación...");
+
+            const sistemaId = document.getElementById('ubi-sistema').value;
+            const pallet = document.getElementById('ubi-pallet').value;
+            const caja = document.getElementById('ubi-caja').value;
+            const csrfTokenInput = document.querySelector('[name=csrfmiddlewaretoken]');
+
+            if (!csrfTokenInput) {
+                alert("❌ Error Crítico: Falta el token CSRF.");
+                return;
+            }
+            const csrfToken = csrfTokenInput.value;
+
+            if (!sistemaId || !pallet || !caja) {
+                alert('⚠️ Por favor complete todos los campos');
+                return;
+            }
+
+            const btn = document.querySelector('#ubicacionForm .submit-btn');
+            const textoOriginal = btn.innerHTML;
+            btn.innerHTML = '⏳ Guardando...';
+            btn.disabled = true;
+
+            // URL generada dinámicamente por Django
+            const urlDestino = "{% url 'crear_ubicacion' %}"; 
+            
+            const formData = new FormData();
+            formData.append('sistema', sistemaId);
+            formData.append('pallet', pallet);
+            formData.append('caja', caja);
+
+            fetch(urlDestino, { 
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken },
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('✅ ÉXITO: ' + data.message);
+                    document.getElementById('ubi-pallet').value = '';
+                    document.getElementById('ubi-caja').value = '';
+                    document.getElementById('ubi-pallet').focus();
+                    // Opcional: Recargar la página para que la nueva ubicación aparezca en el select de registro
+                    // location.reload(); 
+                } else {
+                    alert('❌ Error del servidor: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('❌ ERROR AJAX:', error);
+                alert('❌ Ocurrió un error técnico: ' + error.message);
+            })
+            .finally(() => {
+                btn.innerHTML = textoOriginal;
+                btn.disabled = false;
+            });
+        }
+
         function configurarCalculoCantidad() {
             const textareaSeriales = document.getElementById('seriales');
             const inputCantidad = document.getElementById('cantidad');
             
-            textareaSeriales.addEventListener('input', function() {
-                const lineas = this.value.split('\n').filter(serial => serial.trim() !== '');
-                inputCantidad.value = lineas.length;
-            });
+            if(textareaSeriales && inputCantidad) {
+                textareaSeriales.addEventListener('input', function() {
+                    const lineas = this.value.split('\n').filter(serial => serial.trim() !== '');
+                    inputCantidad.value = lineas.length;
+                });
+            }
         }
 
-        // Configurar filtros en tiempo real
         function configurarFiltrosTiempoReal() {
-            // Filtro por marca
-            document.getElementById('filtro-marca').addEventListener('change', function() {
-                filtrosActivos.marca = this.value;
-                aplicarFiltrosConFetch();
-            });
-
-            // FILTRO UNIFICADO - Busca en Objeto, Modelo y Serial (con debounce)
-            document.getElementById('filtro-busqueda').addEventListener('input', function() {
-                clearTimeout(timeoutFiltro);
-                timeoutFiltro = setTimeout(() => {
-                    filtrosActivos.busqueda = this.value;
+            const filtroMarca = document.getElementById('filtro-marca');
+            if(filtroMarca) {
+                filtroMarca.addEventListener('change', function() {
+                    filtrosActivos.marca = this.value;
                     aplicarFiltrosConFetch();
-                }, 500);
-            });
+                });
+            }
 
-            // Filtro por sistema
-            document.getElementById('filtro-sistema').addEventListener('change', function() {
-                filtrosActivos.sistema = this.value;
-                aplicarFiltrosConFetch();
-            });
+            const filtroBusqueda = document.getElementById('filtro-busqueda');
+            if(filtroBusqueda) {
+                filtroBusqueda.addEventListener('input', function() {
+                    clearTimeout(timeoutFiltro);
+                    timeoutFiltro = setTimeout(() => {
+                        filtrosActivos.busqueda = this.value;
+                        aplicarFiltrosConFetch();
+                    }, 500);
+                });
+            }
+
+            const filtroSistema = document.getElementById('filtro-sistema');
+            if(filtroSistema) {
+                filtroSistema.addEventListener('change', function() {
+                    filtrosActivos.sistema = this.value;
+                    aplicarFiltrosConFetch();
+                });
+            }
         }
 
-        // Configurar paginación para usar Fetch
         function configurarPaginacionFetch() {
             document.addEventListener('click', function(e) {
                 if (e.target.closest('.pagination-arrow') && !e.target.closest('.pagination-disabled-mini')) {
                     e.preventDefault();
                     const link = e.target.closest('a');
-                    if (link) {
-                        cargarPaginaConFetch(link.href);
-                    }
+                    if (link) cargarPaginaConFetch(link.href);
                 }
             });
 
@@ -1190,26 +1265,23 @@
             });
         }
 
-        // Aplicar filtros usando Fetch
         function aplicarFiltrosConFetch() {
-            document.getElementById('indicador-carga').classList.add('mostrar');
+            const indicador = document.getElementById('indicador-carga');
+            if(indicador) indicador.classList.add('mostrar');
             
             const params = new URLSearchParams();
-            
             if (filtrosActivos.marca) params.append('marca', filtrosActivos.marca);
             if (filtrosActivos.busqueda) params.append('busqueda', filtrosActivos.busqueda);
             if (filtrosActivos.sistema) params.append('sistema', filtrosActivos.sistema);
             
             params.append('items', {{ items_por_pagina }});
-            
             cargarPaginaConFetch('?' + params.toString());
         }
 
-        // Cargar página usando Fetch
         function cargarPaginaConFetch(url) {
             const scrollPosition = window.scrollY;
-            
-            document.getElementById('indicador-carga').classList.add('mostrar');
+            const indicador = document.getElementById('indicador-carga');
+            if(indicador) indicador.classList.add('mostrar');
             
             fetch(url, {
                 headers: {
@@ -1218,38 +1290,21 @@
                 }
             })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error en la respuesta del servidor');
-                }
+                if (!response.ok) throw new Error('Error en la respuesta del servidor');
                 return response.text();
             })
             .then(html => {
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = html;
                 
-                const nuevaTabla = tempDiv.querySelector('#tablaInventario');
-                const nuevaPaginacion = tempDiv.querySelector('#pagination-container');
-                const nuevoContador = tempDiv.querySelector('#contador-resultados');
-                const nuevosIndicadores = tempDiv.querySelector('#indicadores-filtros');
-                
-                if (nuevaTabla) {
-                    document.getElementById('tablaInventario').innerHTML = nuevaTabla.innerHTML;
-                }
-                
-                if (nuevaPaginacion) {
-                    document.getElementById('pagination-container').innerHTML = nuevaPaginacion.innerHTML;
-                }
-                
-                if (nuevoContador) {
-                    document.getElementById('contador-resultados').innerHTML = nuevoContador.innerHTML;
-                }
-                
-                if (nuevosIndicadores) {
-                    document.getElementById('indicadores-filtros').innerHTML = nuevosIndicadores.innerHTML;
-                }
+                const elementosAActualizar = ['tablaInventario', 'pagination-container', 'contador-resultados', 'indicadores-filtros'];
+                elementosAActualizar.forEach(id => {
+                    const nuevoElem = tempDiv.querySelector('#' + id);
+                    const viejoElem = document.getElementById(id);
+                    if (nuevoElem && viejoElem) viejoElem.innerHTML = nuevoElem.innerHTML;
+                });
                 
                 window.history.pushState({}, '', url);
-                configurarPaginacionFetch();
                 window.scrollTo(0, scrollPosition);
             })
             .catch(error => {
@@ -1257,11 +1312,10 @@
                 window.location.href = url;
             })
             .finally(() => {
-                document.getElementById('indicador-carga').classList.remove('mostrar');
+                if(indicador) indicador.classList.remove('mostrar');
             });
         }
 
-        // Cambiar items por página usando Fetch
         function cambiarItemsPorPaginaFetch(cantidad) {
             const urlParams = new URLSearchParams(window.location.search);
             let nuevaUrl = '?';
@@ -1274,12 +1328,10 @@
             cargarPaginaConFetch(nuevaUrl);
         }
 
-        // Función original para cambiar items por página (compatibilidad)
         window.cambiarItemsPorPagina = function(cantidad) {
             cambiarItemsPorPaginaFetch(cantidad);
         };
 
-        // Remover un filtro específico
         function removerFiltro(tipo) {
             if (tipo === 'marca') {
                 document.getElementById('filtro-marca').value = '';
@@ -1291,77 +1343,73 @@
                 document.getElementById('filtro-sistema').value = '';
                 filtrosActivos.sistema = '';
             }
-            
             aplicarFiltrosConFetch();
         }
 
-        // Registrar nuevo equipo (simulación)
         function registrarNuevoEquipo() {
+            // 1. Obtener valores
             const seriales = document.getElementById('seriales').value;
-            const cantidad = document.getElementById('cantidad').value;
             const marca = document.getElementById('marca').value;
             const modelo = document.getElementById('modelo').value;
-            const tipoMaquina = document.getElementById('tipo-maquina').value;
+            const tipoMaquina = document.getElementById('tipo-maquina').value; // 'objeto' en la vista
             const sistema = document.getElementById('sistema').value;
-            const sistemaTexto = document.getElementById('sistema').options[document.getElementById('sistema').selectedIndex].text;
-            const stockMinimo = document.getElementById('stock-minimo').value;
-            const fechaIngreso = document.getElementById('fecha-ingreso').value;
-            const usuario = document.getElementById('usuario-registro').value;
+            const ubicacion = document.getElementById('ubicacion').value;
+            const stockMin = document.getElementById('stock-minimo').value;
             
-            // Validaciones básicas
-            if (!tipoMaquina) {
-                alert('Por favor ingrese el tipo de máquina');
+            // Obtener CSRF Token
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            // 2. Validaciones
+            if (!tipoMaquina || !marca || !modelo || !sistema || !ubicacion || seriales.trim() === '') {
+                alert('Por favor complete todos los campos requeridos.');
                 return;
             }
-            
-            if (!marca) {
-                alert('Por favor ingrese la marca');
-                return;
-            }
-            
-            if (!modelo) {
-                alert('Por favor ingrese el modelo');
-                return;
-            }
-            
-            if (seriales.trim() === '') {
-                alert('Por favor ingrese al menos un serial');
-                return;
-            }
-            
-            if (!sistema) {
-                alert('Por favor seleccione el sistema de reparación');
-                return;
-            }
-            
-            const lineasSeriales = seriales.split('\n').filter(serial => serial.trim() !== '');
-            
-            if (parseInt(cantidad) !== lineasSeriales.length) {
-                alert('La cantidad no coincide con el número de seriales ingresados');
-                return;
-            }
-            
-            // Mostrar resumen de lo que se va a registrar
-            let mensaje = `✅ Equipo registrado correctamente:\n\n`;
-            mensaje += `Tipo de Máquina: ${tipoMaquina}\n`;
-            mensaje += `Marca: ${marca}\n`;
-            mensaje += `Modelo: ${modelo}\n`;
-            mensaje += `Sistema: ${sistemaTexto}\n`;
-            mensaje += `Stock Mínimo: ${stockMinimo}\n`;
-            mensaje += `Fecha Ingreso: ${fechaIngreso}\n`;
-            mensaje += `Usuario: ${document.getElementById('usuario-registro').options[document.getElementById('usuario-registro').selectedIndex].text}\n`;
-            mensaje += `Seriales: ${lineasSeriales.length}\n\n`;
-            mensaje += `Se crearán ${lineasSeriales.length} registro(s) individual(es) en el inventario.`;
-            
-            alert(mensaje);
-            
-            // Limpiar formulario
-            document.getElementById('registroForm').reset();
-            document.getElementById('fecha-ingreso').value = new Date().toISOString().split('T')[0];
-            document.getElementById('cantidad').value = '0';
+
+            // 3. Cambiar botón a estado "Cargando"
+            const btn = document.querySelector('#registroForm .submit-btn');
+            const textoOriginal = btn.innerHTML;
+            btn.innerHTML = '⏳ Guardando...';
+            btn.disabled = true;
+
+            // 4. Preparar datos
+            const formData = new FormData();
+            formData.append('objeto', tipoMaquina);
+            formData.append('marca', marca);
+            formData.append('modelo', modelo);
+            formData.append('sistema', sistema);
+            formData.append('ubicacion', ubicacion);
+            formData.append('stock_min', stockMin);
+            formData.append('seriales', seriales);
+            // NOTA: No enviamos 'usuario', el servidor lo toma de la sesión
+
+            // 5. Enviar al servidor
+            fetch("{% url 'registrar_equipo' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('✅ ' + data.message);
+                    // Limpiar formulario o recargar página
+                    location.reload(); 
+                } else {
+                    alert('❌ Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('❌ Error de conexión al registrar.');
+            })
+            .finally(() => {
+                btn.innerHTML = textoOriginal;
+                btn.disabled = false;
+            });
         }
 
-        // Manejar el botón de retroceso/avance del navegador
         window.addEventListener('popstate', function(event) {
             cargarPaginaConFetch(window.location.href);
         });
