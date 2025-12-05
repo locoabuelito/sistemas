@@ -32,6 +32,7 @@ class Ubicacion(models.Model):
     
     class Meta:
         db_table = 'ubicacion'
+        managed = False
         verbose_name = 'Ubicación'
         verbose_name_plural = 'Ubicaciones'
 
@@ -46,6 +47,7 @@ class TipoProblema(models.Model):
     
     class Meta:
         db_table = 'tipo_problema'
-        managed = True
+        managed = False
         verbose_name = 'Tipo de Problema'
         verbose_name_plural = 'Tipos de Problemas'
+        

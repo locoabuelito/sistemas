@@ -1,6 +1,8 @@
 # usuarios/forms.py
 from django import forms
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import gettext_lazy as _
+from .models import UsuarioTecnico
 
 class UsuarioTecnicoLoginForm(forms.Form):
     username = forms.CharField(
@@ -26,3 +28,21 @@ class UsuarioTecnicoLoginForm(forms.Form):
         ),
         'inactive': _("Esta cuenta está inactiva."),
     }
+    
+class UsuarioTecnicoCreationForm(UserCreationForm):
+    """
+    Formulario para CREAR usuarios desde el admin.
+    Maneja automáticamente la contraseña y su confirmación.
+    """
+    class Meta:
+        model = UsuarioTecnico
+        fields = ('correo_tecnico', 'nombre_tecnico', 'id_sector_tecnico')
+
+class UsuarioTecnicoChangeForm(UserChangeForm):
+    """
+    Formulario para EDITAR usuarios desde el admin.
+    Permite cambiar datos y tiene el enlace para resetear password.
+    """
+    class Meta:
+        model = UsuarioTecnico
+        fields = '__all__'
