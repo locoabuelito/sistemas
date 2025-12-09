@@ -11,6 +11,4 @@ urlpatterns = [
     path('historial-reparaciones/', views.historial_reparaciones, name='historial_reparaciones'),
     path('informes-warehouse/', views.informes_warehouse, name='informes_warehouse'),
     path('informes-hydro/', views.informes_hydro, name='informes_hydro'),
-    path('prestamos-herramientas/', views.prestamos_herramientas, name='prestamos_herramientas'),
-    #path('control-inventarios/', views.control_inventarios, name='control_inventarios'),
 ]

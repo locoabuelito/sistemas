@@ -1,3 +1,6 @@
+# prestamos/views.py
+
 from django.shortcuts import render
 
-# Create your views here.
+def prestamos_view(request):
+    return render(request, 'prestamos/prestamos_herramientas.html')

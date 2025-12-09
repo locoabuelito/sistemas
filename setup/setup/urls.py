@@ -24,6 +24,7 @@ urlpatterns = [
     path("menu-principal/", include('menu_principal.urls')),
     path('inventario/', include('inventario.urls')),
     path('reparacion_warehouse/', include('reparacion_warehouse.urls')),
+    path('prestamos/', include('prestamos.urls')),
     path('admin/', admin.site.urls),
     path('usuarios/', include(('usuarios.urls', 'usuarios'), namespace='usuarios')),
     path('', RedirectView.as_view(url='/usuarios/login/')),

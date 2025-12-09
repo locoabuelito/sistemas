@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Préstamos - Gestión de Herramientas</title>
+    <style>
+        /* Variables CSS */
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --dark-color: #1e293b;
+            --gray-color: #64748b;
+            --light-gray: #e2e8f0;
+            --background-color: #f8fafc;
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-primary);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover { background: var(--primary-color); color: white; }
+
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 2.5rem; margin-bottom: 10px; color: var(--dark-color); }
+        .header p { color: var(--gray-color); font-size: 1.1rem; }
+
+        /* Estadísticas */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white; padding: 15px; border-radius: 8px; text-align: center;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+        }
+        .stat-number { font-size: 1.5rem; font-weight: bold; color: var(--primary-color); }
+        .stat-label { color: var(--gray-color); font-size: 0.8rem; }
+
+        /* BARRA DE DEVOLUCIÓN RÁPIDA (Nuevo Estilo Horizontal) */
+        .quick-return-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid var(--success-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+        }
+        
+        .quick-return-form {
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+        }
+
+        .quick-return-form .form-group {
+            margin-bottom: 0;
+            flex-grow: 1;
+        }
+
+        .quick-return-form .submit-btn {
+            width: auto;
+            margin-top: 0;
+            white-space: nowrap;
+        }
+
+        /* Layout principal - GRID 2 COLUMNAS (Lado a Lado) */
+        .main-content {
+            display: grid;
+            /* 1 parte para formulario, 3 partes para tabla (más espacio a la tabla) */
+            grid-template-columns: 1fr 3fr; 
+            gap: 25px;
+            align-items: start; /* Alineación superior */
+        }
+
+        /* Cards Generales */
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 { color: var(--primary-color); margin-bottom: 20px; font-size: 1.3rem; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+
+        /* Formularios */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: var(--dark-color); font-size: 0.85rem; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 8px 10px; border: 2px solid var(--light-gray);
+            border-radius: 6px; font-size: 0.9rem; transition: border-color 0.3s ease;
+        }
+        .form-group input:focus { border-color: var(--primary-color); outline: none; }
+        
+        .submit-btn {
+            background: var(--primary-color); color: white; border: none;
+            padding: 10px 20px; border-radius: 6px; cursor: pointer;
+            font-weight: bold; width: 100%; transition: background 0.3s ease;
+        }
+        .submit-btn:hover { background: var(--primary-dark); }
+        .btn-return { background-color: var(--success-color); }
+        .btn-return:hover { background-color: #059669; }
+
+        /* Tablas */
+        .inventario-table {
+            width: 100%; border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .inventario-table th {
+            background: #f1f5f9; color: var(--dark-color); padding: 12px;
+            text-align: left; font-weight: bold; border-bottom: 2px solid #e2e8f0;
+        }
+        .inventario-table td {
+            padding: 10px 12px; border-bottom: 1px solid #f1f5f9;
+        }
+        .inventario-table tr:hover { background: #f8fafc; }
+
+        /* Badges */
+        .status-badge {
+            display: inline-block; padding: 4px 8px; border-radius: 12px;
+            font-size: 0.7rem; font-weight: bold; text-transform: uppercase;
+        }
+        .status-prestado { background: #dbeafe; color: #1e40af; }
+        .status-atrasado { background: #fee2e2; color: #991b1b; }
+
+        /* Filtros en linea */
+        .filtros-header {
+            display: flex; gap: 15px; background: #f8fafc; padding: 15px; 
+            border-radius: 8px; margin-bottom: 15px; align-items: flex-end;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-content { grid-template-columns: 1fr; } /* En pantallas medianas, una debajo de otra */
+            .quick-return-form { flex-direction: column; align-items: stretch; }
+            .filtros-header { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/menu-principal/" class="back-link">← Volver al Menú Principal</a>
+        
+        <div class="header">
+            <h1>🛠️ Control de Préstamos</h1>
+            <p>Gestión de asignación y devolución de herramientas</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">24</div>
+                <div class="stat-label">Prestadas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">5</div>
+                <div class="stat-label">Atrasadas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">150</div>
+                <div class="stat-label">Stock Total</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            
+            <div class="card">
+                <h3>➕ Nuevo Préstamo</h3>
+                <form id="prestamoForm">
+                    <div class="form-group">
+                        <label for="tecnico">Técnico Responsable:</label>
+                            <input type="text" 
+                                id="tecnico_nombre" 
+                                value="{{ user.nombre_tecnico }}" 
+                                readonly 
+                                style="background-color: #e2e8f0; color: #64748b; cursor: not-allowed;">
+                            
+                            <input type="hidden" id="tecnico" name="tecnico" value="{{ user.id_usuario_tecnico }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="herramienta">Herramienta:</label>
+                        <input type="text" id="herramienta" placeholder="Buscar herramienta...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="serial-prestamo">Serial:</label>
+                        <input type="text" id="serial-prestamo" required placeholder="Ej: SN-998877">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="destino">Destino:</label>
+                        <input type="text" id="destino" required placeholder="Ej: Valenzuela">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fecha-salida">Fecha Salida:</label>
+                        <input type="date" id="fecha-salida">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="observaciones">Observaciones:</label>
+                        <textarea id="observaciones" rows="2"></textarea>
+                    </div>
+
+                    <button type="button" class="submit-btn">📦 Registrar Salida</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="margin-bottom:0; border:none;">📋 Préstamos Activos</h3>
+                    <span style="background:#e2e8f0; padding:5px 10px; border-radius:15px; font-size:0.8rem;">Total: 24</span>
+                </div>
+
+                <div class="filtros-header">
+                    <div style="flex:1;">
+                        <label style="font-size:0.75rem; font-weight:bold; color:#64748b;">Estado:</label>
+                        <select style="width:100%; padding:6px; border:1px solid #cbd5e1; border-radius:4px;">
+                            <option>Todos</option>
+                            <option selected>En Uso</option>
+                            <option>Atrasados</option>
+                        </select>
+                    </div>
+                    <div style="flex:2;">
+                        <label style="font-size:0.75rem; font-weight:bold; color:#64748b;">Buscar:</label>
+                        <input type="text" placeholder="Nombre, serial..." style="width:100%; padding:6px; border:1px solid #cbd5e1; border-radius:4px;">
+                    </div>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table class="inventario-table">
+                        <thead>
+                            <tr>
+                                <th>Herramienta</th>
+                                <th>Serial</th>
+                                <th>Técnico</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Fusionadora Fibra</td>
+                                <td>FUS-01</td>
+                                <td>Juan Pérez</td>
+                                <td>06/12</td>
+                                <td><span class="status-badge status-prestado">En Uso</span></td>
+                                <td><button style="border:none; bg:none; color:blue; cursor:pointer;">Ver</button></td>
+                            </tr>
+                            <tr>
+                                <td>Taladro Percutor</td>
+                                <td>BOSCH-99</td>
+                                <td>María Gómez</td>
+                                <td>01/12</td>
+                                <td><span class="status-badge status-atrasado">Atrasado</span></td>
+                                <td><button style="border:none; bg:none; color:blue; cursor:pointer;">Ver</button></td>
+                            </tr>
+                            <tr>
+                                <td>Multímetro Fluke</td>
+                                <td>FLU-87</td>
+                                <td>Carlos Ruíz</td>
+                                <td>08/12</td>
+                                <td><span class="status-badge status-prestado">En Uso</span></td>
+                                <td><button style="border:none; bg:none; color:blue; cursor:pointer;">Ver</button></td>
+                            </tr>
+                             <tr>
+                                <td>Crimpadora RJ45</td>
+                                <td>TOOLS-10</td>
+                                <td>Juan Pérez</td>
+                                <td>09/12</td>
+                                <td><span class="status-badge status-prestado">En Uso</span></td>
+                                <td><button style="border:none; bg:none; color:blue; cursor:pointer;">Ver</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div style="margin-top:20px; text-align:center; font-size:0.85rem; color:#64748b;">
+                    Anterior | <b>1</b> 2 3 | Siguiente
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('fecha-salida').valueAsDate = new Date();
+    </script>
+</body>
+</html>
