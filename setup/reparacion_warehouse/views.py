@@ -7,7 +7,7 @@ from .models import EquiposWarehouse, Ubicacion, TipoProblema
 def reparacion_warehouse_view(request):
     # 1. Obtener todos los tipos de equipos (sin cambios)
     tipos_maquinas = EquiposWarehouse.objects.values_list(
-        'tipo_equipos_warehouse', 
+        'modelo_equipos_warehouse', 
         flat=True
     ).distinct()
     

@@ -171,6 +171,106 @@
             .quick-return-form { flex-direction: column; align-items: stretch; }
             .filtros-header { flex-direction: column; align-items: stretch; }
         }
+
+        /* Contenedor principal relativo */
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        /* Input de búsqueda */
+        .search-input {
+            width: 100%;
+            padding: 14px 45px 14px 15px; /* Espacio a la derecha para el spinner */
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #2d3748;
+            background-color: #fff;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3182ce;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+        }
+
+        /* Spinner de carga (oculto por defecto) */
+        .spinner {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e2e8f0;
+            border-top: 2px solid #3182ce;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none; /* Oculto */
+        }
+
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        /* Lista de resultados flotante */
+        .results-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-top: 6px;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+            display: none;
+        }
+
+        /* Elementos individuales */
+        .result-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f7fafc;
+            cursor: pointer;
+            transition: background 0.15s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-item:hover {
+            background-color: #ebf8ff;
+        }
+
+        /* Tipografía interna del item */
+        .item-title {
+            font-weight: 600;
+            color: #2d3748;
+        }
+        .item-subtitle {
+            font-size: 0.85rem;
+            color: #718096;
+        }
+
+        .no-results {
+            padding: 15px;
+            color: #718096;
+            text-align: center;
+            font-style: italic;
+        }
+
     </style>
 </head>
 <body>
@@ -213,9 +313,22 @@
                             <input type="hidden" id="tecnico" name="tecnico" value="{{ user.id_usuario_tecnico }}">
                     </div>
                     
-                    <div class="form-group">
-                        <label for="herramienta">Herramienta:</label>
-                        <input type="text" id="herramienta" placeholder="Buscar herramienta...">
+                    <div class="mb-4 search-container">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="busqueda_visible">
+                            Buscar Equipo o Herramienta
+                        </label>
+                        
+                        <input type="text" 
+                            id="busqueda_visible" 
+                            class="search-input" 
+                            placeholder="Escribe serial, marca o nombre..." 
+                            autocomplete="off">
+                        
+                        <div id="loading_spinner" class="spinner"></div>
+
+                        <input type="hidden" name="equipo_id" id="equipo_id_hidden">
+
+                        <div id="lista_resultados" class="results-dropdown"></div>
                     </div>
 
                     <div class="form-group">
@@ -320,7 +433,107 @@
     </div>
 
     <script>
-        document.getElementById('fecha-salida').valueAsDate = new Date();
-    </script>
+    // Establecer fecha actual por defecto
+    document.getElementById('fecha-salida').valueAsDate = new Date();
+    // Seccion de Buscar Equipo o Herramienta
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputVisible = document.getElementById('busqueda_visible');
+        const inputHidden = document.getElementById('equipo_id_hidden');
+        const lista = document.getElementById('lista_resultados');
+        const spinner = document.getElementById('loading_spinner');
+        
+        // --- ESTA ES LA LÍNEA QUE FALTABA ---
+        const inputSerial = document.getElementById('serial-prestamo'); 
+        // -------------------------------------
+
+        let timeoutId;
+
+        inputVisible.addEventListener('input', function() {
+            const query = this.value.trim();
+
+            // Si el usuario borra la búsqueda, limpiamos y desbloqueamos todo
+            if (query.length === 0) {
+                lista.style.display = 'none';
+                inputHidden.value = ''; 
+                
+                // Limpiar y desbloquear serial
+                inputSerial.value = '';
+                inputSerial.readOnly = false;
+                inputSerial.style.backgroundColor = ''; 
+                inputSerial.style.cursor = '';
+                return;
+            }
+
+            // Mostrar spinner
+            spinner.style.display = 'block';
+
+            // Debounce (esperar a que deje de escribir)
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                realizarBusqueda(query);
+            }, 400);
+        });
+
+        function realizarBusqueda(query) {
+            fetch(`/prestamos/buscar-equipos/?q=${encodeURIComponent(query)}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Error en la red');
+                    return response.json();
+                })
+                .then(data => {
+                    lista.innerHTML = '';
+                    spinner.style.display = 'none';
+
+                    if (data.results && data.results.length > 0) {
+                        lista.style.display = 'block';
+                        
+                        data.results.forEach(item => {
+                            const div = document.createElement('div');
+                            div.classList.add('result-item');
+                            
+                            div.innerHTML = `
+                                <span class="item-title">${item.texto_principal}</span>
+                                <span class="item-subtitle">${item.texto_secundario}</span>
+                            `;
+
+                            // AL HACER CLICK EN UN ELEMENTO
+                            div.addEventListener('click', () => {
+                                // 1. Rellenar el input de búsqueda con el nombre del equipo
+                                inputVisible.value = item.texto_principal;
+                                inputHidden.value = item.id;
+                                
+                                // 2. RELLENAR SERIAL AUTOMÁTICAMENTE
+                                if (item.serial) {
+                                    inputSerial.value = item.serial;               // Pone el número
+                                    inputSerial.readOnly = true;                   // Bloquea escritura
+                                    inputSerial.style.backgroundColor = '#e2e8f0'; // Pone fondo gris
+                                    inputSerial.style.cursor = 'not-allowed';      // Cambia el cursor
+                                }
+
+                                // 3. OCULTAR LA LISTA (Hacerla invisible)
+                                lista.style.display = 'none';
+                            });
+
+                            lista.appendChild(div);
+                        });
+                    } else {
+                        lista.style.display = 'block';
+                        lista.innerHTML = '<div class="no-results">No se encontraron coincidencias.</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    spinner.style.display = 'none';
+                });
+        }
+
+        // Cerrar la lista al hacer click fuera
+        document.addEventListener('click', e => {
+            if(!inputVisible.contains(e.target) && !lista.contains(e.target)) {
+                lista.style.display = 'none';
+            }
+        });
+    });
+</script>
 </body>
 </html>

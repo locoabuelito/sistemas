@@ -3,7 +3,7 @@ from usuarios.models import UsuarioTecnico
 
 class EquiposWarehouse(models.Model):
     id_equipos_warehouse = models.AutoField(primary_key=True)
-    tipo_equipos_warehouse = models.CharField(max_length=200)
+    modelo_equipos_warehouse = models.CharField(max_length=200)
     ip_equipos_warehouse = models.CharField(max_length=15, blank=True, null=True)
     mac_equipos_warehouse = models.CharField(max_length=17, blank=True, null=True)
     serial_equipos_warehouse = models.CharField(max_length=100, blank=True, null=True)
@@ -14,7 +14,7 @@ class EquiposWarehouse(models.Model):
     hardware_equipos_warehouse = models.CharField(max_length=100, blank=True, null=True)
     
     def __str__(self):
-        return f"{self.tipo_equipos_warehouse} - {self.serial_equipos_warehouse or 'Sin Serial'}"
+        return f"{self.modelo_equipos_warehouse} - {self.serial_equipos_warehouse or 'Sin Serial'}"
     
     class Meta:
         db_table = 'equipos_warehouse'
