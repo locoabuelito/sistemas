@@ -360,60 +360,74 @@
 
         <div class="content">
             <div class="card">
-                <h3>➕ Nueva Solicitud de Reparación</h3>
-                <form id="solicitudForm">
-                    <div class="form-group">
-                        <label for="warehouse">Seleccionar Warehouse:</label>
-                        <select id="warehouse" required>
-                            <option value="">Seleccione el Warehouse</option>
-                            {% for wh in warehouses %}
-                            <option value="{{ wh.nombre_ubicacion }}">{{ wh.nombre_ubicacion }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                    <h3>➕ Solicitud de Reparación</h3>
+                    <form id="solicitudForm">
+                        <div class="form-group">
+                            <label for="warehouse">Seleccionar Warehouse:</label>
+                            <select id="warehouse" required onchange="cargarRacksDelWarehouse(this.value)">
+                                <option value="">Seleccione el Warehouse</option>
+                                {% for wh in warehouses %}
+                                    <option value="{{ wh.id_ubicacion }}">{{ wh.nombre_ubicacion }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="tipoMaquina">Tipo de Máquina:</label>
-                        <select id="tipoMaquina" required>
-                            <option value="">Seleccione el tipo de máquina</option>
-                            {% for tipo in tipos_maquinas %}
-                            <option value="{{ tipo|slugify }}">{{ tipo }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                        <div class="form-group">
+                            <label for="rackSelect">Seleccionar Ubicación (Rack):</label>
+                            <select id="rackSelect" required disabled onchange="cargarEquiposPorRack()">
+                                <option value="">Primero seleccione un Warehouse</option>
+                            </select>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="tipoProblema">Tipo de Problema:</label>
-                        <select id="tipoProblema" required>
-                            <option value="">Seleccione el tipo de problema</option>
+                        <div class="form-group">
+                            <label for="equipoSelect">Equipo Afectado:</label>
+                            <select id="equipoSelect" required disabled>
+                                <option value="">Primero seleccione un Rack</option>
+                            </select>
+                        </div>
+
+                        <div id="fichaTecnica" style="display: none; margin-bottom: 20px; padding: 15px; background-color: #f0f9ff; border-left: 5px solid #3b82f6; border-radius: 8px; position: relative;">
+    
+                            <span onclick="cerrarFicha()" style="position: absolute; top: 5px; right: 10px; cursor: pointer; font-size: 1.5rem; color: #64748b; font-weight: bold; line-height: 1;">&times;</span>
+
+                            <h4 style="margin-top: 0; color: #1e3a8a; margin-bottom: 10px; padding-right: 20px;">📠 Detalles del Equipo</h4>
                             
-                            {% for problema in tipos_problema %}
-                            <option value="{{ problema.id_tipo_problema }}" data-nombre="{{ problema.nombre_problema }}">
-                                {{ problema.nombre_problema }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9rem;">
+                                <div><strong>IP:</strong> <span id="infoIP">-</span></div>
+                                <div><strong>MAC:</strong> <span id="infoMAC">-</span></div>
+                                <div><strong>Serial:</strong> <span id="infoSerial">-</span></div>
+                                <div><strong>Firmware:</strong> <span id="infoFirmware">-</span></div>
+                            </div>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="thCantidad">Cantidad de TH/s afectados:</label>
-                        <input type="number" id="thCantidad" min="0" max="10000" step="0.1" required
-                            placeholder="Ej: 120.5">
-                    </div>
+                        <div class="form-group">
+                            <label for="tipoProblema">Tipo de Problema:</label>
+                            <select id="tipoProblema" required>
+                                <option value="">Seleccione el tipo de problema</option>
+                                {% for problema in tipos_problema %}
+                                <option value="{{ problema.id_tipo_problema }}" data-nombre="{{ problema.nombre_problema }}">
+                                    {{ problema.nombre_problema }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
-                    <input type="hidden" id="tecnicoId" value="{{ usuario_logueado.id_usuario_tecnico }}">
-                    <input type="hidden" id="tecnicoNombre" value="{{ usuario_logueado.nombre_tecnico }}">
+                        <div class="form-group">
+                            <label for="thCantidad">Cantidad de TH/s afectados:</label>
+                            <input type="number" id="thCantidad" min="0" max="10000" step="0.1" required placeholder="Ej: 120.5">
+                        </div>
 
-                    <div class="form-group">
-                        <label for="descripcion">Descripción del Problema:</label>
-                        <textarea id="descripcion"
-                            placeholder="Describa en detalle el problema encontrado, equipo afectado, síntomas observados..."
-                            required></textarea>
-                    </div>
+                        <input type="hidden" id="tecnicoId" value="{{ usuario_logueado.id_usuario_tecnico }}">
+                        <input type="hidden" id="tecnicoNombre" value="{{ usuario_logueado.nombre_tecnico }}">
 
-                    <button type="submit" class="submit-btn">📋 Crear Solicitud de Reparación</button>
-                </form>
-            </div>
+                        <div class="form-group">
+                            <label for="descripcion">Descripción del Problema:</label>
+                            <textarea id="descripcion" placeholder="Describa en detalle el problema..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="submit-btn">📋 Crear Solicitud de Reparación</button>
+                    </form>
+                </div>
 
             <div class="card">
                 <h3>📋 Solicitudes de Reparación Activas</h3>
@@ -424,59 +438,6 @@
     </div>
 
     <script>
-        let solicitudes = [
-            {
-                id: "SR-001-151124",
-                warehouse: "WH-01",
-                tipoMaquina: "asic",
-                tipoProblema: "Falla de Hardware",
-                thCantidad: 85.5,
-                tecnico: "Juan Pérez",
-                descripcion: "Problema con las tarjetas gráficas en el rack 3, se detectaron 5 GPUs fallidas. Se requiere reemplazo inmediato.",
-                status: "pendiente",
-                fecha: "2024-11-15",
-                fechaCreacion: "15/11/2024"
-            },
-            {
-                id: "SR-002-141124",
-                warehouse: "WH-03",
-                tipoMaquina: "gpu-rack",
-                tipoProblema: "Error de Software",
-                thCantidad: 120.0,
-                tecnico: "María González",
-                descripcion: "Error en el software de minería, requiere actualización del firmware. Los equipos presentan reinicios constantes.",
-                status: "proceso",
-                fecha: "2024-11-14",
-                fechaCreacion: "14/11/2024"
-            },
-            {
-                id: "SR-003-161124",
-                warehouse: "WH-07",
-                tipoMaquina: "cooling",
-                tipoProblema: "Problema de Temperatura",
-                thCantidad: 45.2,
-                tecnico: "Carlos Rodríguez",
-                descripcion: "Sistema de ventilación fallando en el sector B, temperatura elevada detectada por sensores. Riesgo de sobrecalentamiento.",
-                status: "pendiente",
-                fecha: "2024-11-16",
-                fechaCreacion: "16/11/2024"
-            }
-        ];
-
-        let contadorSolicitudes = 4;
-
-        const tiposMaquina = {
-            'asic': 'ASIC Miner',
-            'gpu-rack': 'GPU Rack',
-            'servidor': 'Servidor',
-            'switch': 'Switch de Red',
-            'router': 'Router',
-            'ups': 'Sistema UPS',
-            'cooling': 'Sistema de Enfriamiento',
-            'pdu': 'PDU',
-            'transformador': 'Transformador',
-            'otros': 'Otros Equipos'
-        };
 
         function formatearFechaParaID(fecha) {
             const date = new Date(fecha);
@@ -618,6 +579,121 @@
             document.getElementById('solicitudes-proceso').textContent = proceso;
             document.getElementById('solicitudes-completadas').textContent = completadas;
         }
+
+    // URL de la API que creamos en el Paso 3
+    const URL_API_RACKS = "/reparacion_warehouse/api/obtener-racks/";
+    const URL_API_EQUIPOS = "/reparacion_warehouse/api/obtener-equipos/";
+
+    // --- CARGAR RACKS ---
+    function cargarRacksDelWarehouse(warehouseId) {
+        const rackSelect = document.getElementById('rackSelect');
+        const equipoSelect = document.getElementById('equipoSelect');
+        const ficha = document.getElementById('fichaTecnica');
+        
+        // Resetear todo
+        rackSelect.innerHTML = '<option value="">Cargando racks...</option>';
+        rackSelect.disabled = true;
+        equipoSelect.innerHTML = '<option value="">Primero seleccione un Rack</option>';
+        equipoSelect.disabled = true;
+        ficha.style.display = 'none';
+
+        if (!warehouseId) {
+            rackSelect.innerHTML = '<option value="">Primero seleccione un Warehouse</option>';
+            return;
+        }
+
+        fetch(`${URL_API_RACKS}?warehouse_id=${warehouseId}`)
+            .then(res => res.json())
+            .then(data => {
+                rackSelect.innerHTML = '<option value="">Seleccione un Rack</option>';
+                if (data.racks && data.racks.length > 0) {
+                    data.racks.forEach(rack => {
+                        const option = document.createElement('option');
+                        option.value = rack;
+                        option.textContent = `Rack ${rack}`;
+                        rackSelect.appendChild(option);
+                    });
+                    rackSelect.disabled = false;
+                } else {
+                    rackSelect.innerHTML = '<option value="">No hay racks definidos</option>';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                rackSelect.innerHTML = '<option value="">Error al cargar racks</option>';
+            });
+    }
+
+    // --- CARGAR EQUIPOS ---
+    function cargarEquiposPorRack() {
+        const warehouseId = document.getElementById('warehouse').value;
+        const rackId = document.getElementById('rackSelect').value;
+        const equipoSelect = document.getElementById('equipoSelect');
+        const ficha = document.getElementById('fichaTecnica');
+        
+        equipoSelect.innerHTML = '<option value="">Cargando equipos...</option>';
+        equipoSelect.disabled = true;
+        ficha.style.display = 'none';
+
+        if (!rackId) return;
+
+        fetch(`${URL_API_EQUIPOS}?warehouse_id=${warehouseId}&rack=${rackId}`)
+            .then(res => res.json())
+            .then(data => {
+                equipoSelect.innerHTML = '<option value="">Seleccione el equipo afectado</option>';
+                if (data.equipos && data.equipos.length > 0) {
+                    data.equipos.forEach(equipo => {
+                        const option = document.createElement('option');
+                        option.value = equipo.id;
+                        option.textContent = `${equipo.modelo} - ${equipo.serial || 'S/N'} [${equipo.ubicacion_detalle}]`;
+                        
+                        // Guardar datos técnicos
+                        option.dataset.ip = equipo.ip;
+                        option.dataset.mac = equipo.mac;
+                        option.dataset.serial = equipo.serial || 'N/A';
+                        option.dataset.firmware = equipo.firmware;
+                        
+                        equipoSelect.appendChild(option);
+                    });
+                    equipoSelect.disabled = false;
+                } else {
+                    equipoSelect.innerHTML = '<option value="">No hay equipos en este Rack</option>';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                equipoSelect.innerHTML = '<option value="">Error al cargar equipos</option>';
+            });
+    }
+
+    // --- MOSTRAR FICHA TÉCNICA ---
+    document.getElementById('equipoSelect').addEventListener('change', function() {
+        const ficha = document.getElementById('fichaTecnica');
+        const opcion = this.options[this.selectedIndex];
+        
+        if (!this.value) {
+            ficha.style.display = 'none';
+            return;
+        }
+
+        document.getElementById('infoIP').textContent = opcion.dataset.ip || '-';
+        document.getElementById('infoMAC').textContent = opcion.dataset.mac || '-';
+        document.getElementById('infoSerial').textContent = opcion.dataset.serial || '-';
+        document.getElementById('infoFirmware').textContent = opcion.dataset.firmware || '-';
+        
+        ficha.style.display = 'block';
+    });
+
+    // --- ENVÍO DEL FORMULARIO ---
+    document.getElementById('solicitudForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        // Aquí iría tu lógica de fetch POST para guardar la solicitud
+        alert('Solicitud enviada para el equipo: ' + document.getElementById('equipoSelect').value);
+    });
+
+    function cerrarFicha() {
+        document.getElementById('fichaTecnica').style.display = 'none';
+    }
     </script>
 </body>
 
