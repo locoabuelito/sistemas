@@ -27,4 +27,10 @@ urlpatterns = [
 
     # Esta ruta recibe el ID en la URL porque la vista así lo requiere
     path('api/ocultar-solicitud/<int:id_solicitud>/', views.ocultar_solicitud, name='ocultar_solicitud'),
+    
+    # Esta ruta recepciona un equipo (cambia estado de la solicitud)
+    path('api/recepcionar-equipo/', views.recepcionar_equipo, name='recepcionar_equipo'),
+    
+    # Esta ruta permite asignar una ubicación física (Rack) al equipo
+    path('api/obtener-posiciones/', views.obtener_posiciones_rack, name='obtener_posiciones_rack'),
 ]

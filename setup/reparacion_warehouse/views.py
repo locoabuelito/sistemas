@@ -269,3 +269,86 @@ def ocultar_solicitud(request, id_solicitud):
         return JsonResponse({'status': 'success', 'message': 'Solicitud eliminada de la vista'})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    
+@login_required
+@require_POST
+def recepcionar_equipo(request):
+    try:
+        data = json.loads(request.body)
+        id_solicitud = data.get('id_solicitud')
+        id_ubicacion_warehouse_destino = data.get('id_ubicacion_warehouse') # ID específico (fila/columna)
+        notas_cierre = data.get('notas', '')
+
+        if not id_solicitud or not id_ubicacion_warehouse_destino:
+            return JsonResponse({'status': 'error', 'message': 'Faltan datos (Solicitud o Ubicación)'}, status=400)
+
+        # 1. Obtener la solicitud
+        solicitud = get_object_or_404(SolicitudReparacion, pk=id_solicitud)
+        
+        # 2. Verificar que no esté ya cerrada
+        if solicitud.estado == 'completado':
+            return JsonResponse({'status': 'error', 'message': 'Esta solicitud ya fue cerrada'}, status=400)
+
+        # 3. LÓGICA DE MOVIMIENTO DE INVENTARIO
+        # a) Desactivar la asignación actual (donde estaba antes o "en tránsito")
+        AsignacionUbicacionWarehouse.objects.filter(
+            id_equipos_warehouse=solicitud.equipo,
+            activo_asignacion_equipo_ubicacion=True
+        ).update(
+            activo_asignacion_equipo_ubicacion=False,
+            fecha_desasignacion=timezone.now()
+        )
+
+        # b) Crear nueva asignación en la ubicación seleccionada
+        nueva_asignacion = AsignacionUbicacionWarehouse(
+            id_equipos_warehouse=solicitud.equipo,
+            id_ubicacion_warehouse_id=id_ubicacion_warehouse_destino,
+            observaciones=f"Reingreso por reparación #{id_solicitud}. {notas_cierre}",
+            activo_asignacion_equipo_ubicacion=True
+        )
+        nueva_asignacion.save()
+
+        # 4. Actualizar la Solicitud
+        solicitud.estado = 'completado'
+        # Podrías agregar un campo fecha_cierre en tu modelo si quisieras
+        solicitud.descripcion += f"\n[CIERRE] {timezone.now().strftime('%d/%m/%Y')}: {notas_cierre}" 
+        solicitud.save()
+
+        return JsonResponse({'status': 'success', 'message': 'Equipo recepcionado y reubicado correctamente'})
+
+    except Exception as e:
+        print(f"Error Recepción: {e}")
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    
+@login_required
+def obtener_posiciones_rack(request):
+    warehouse_id = request.GET.get('warehouse_id')
+    rack = request.GET.get('rack')
+    
+    try:
+        # Buscamos las ubicaciones físicas (celdas) de ese rack
+        ubicaciones = UbicacionWarehouse.objects.filter(
+            id_ubicacion_id=warehouse_id,
+            rack=rack,
+            activo_ubicacion_warehouse=True
+        ).order_by('fila', 'columna')
+        
+        data = []
+        for u in ubicaciones:
+            # Opcional: Verificar si está ocupada
+            ocupada = AsignacionUbicacionWarehouse.objects.filter(
+                id_ubicacion_warehouse=u,
+                activo_asignacion_equipo_ubicacion=True
+            ).exists()
+            
+            estado_str = "(Ocupada)" if ocupada else "(Libre)"
+            
+            data.append({
+                'id': u.id_ubicacion_warehouse,
+                'texto': f"Fila {u.fila} - Col {u.columna} {estado_str}",
+                'ocupada': ocupada
+            })
+            
+        return JsonResponse({'posiciones': data})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
