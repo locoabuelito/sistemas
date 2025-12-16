@@ -2,12 +2,29 @@
 from django.urls import path
 from . import views
 
-
 urlpatterns = [
-     path('', views.reparacion_warehouse_view, name='reparacion_warehouse'),
-     # --- NUEVA RUTA PARA AJAX ---
-     # Esta es la dirección que usaremos en el fetch: /reparacion-warehouse/api/obtener-equipos/
-     path('api/obtener-equipos/', views.obtener_equipos_por_warehouse, name='obtener_equipos_por_warehouse'),
-     # --- NUEVA RUTA PARA RACKS ---
-     path('api/obtener-racks/', views.obtener_racks_por_warehouse, name='obtener_racks_por_warehouse'),
+    # ==========================================================================
+    # 1. VISTA PRINCIPAL (HTML)
+    # ==========================================================================
+    path('', views.reparacion_warehouse_view, name='reparacion_warehouse'),
+
+    # ==========================================================================
+    # 2. APIS DE FILTROS (SELECTS EN CASCADA)
+    # Rutas para llenar los dropdowns de Racks y Equipos dinámicamente
+    # ==========================================================================
+    path('api/obtener-racks/', views.obtener_racks_por_warehouse, name='obtener_racks_por_warehouse'),
+    path('api/obtener-equipos/', views.obtener_equipos_por_warehouse, name='obtener_equipos_por_warehouse'),
+
+    # ==========================================================================
+    # 3. APIS DE GESTIÓN (CRUD SOLICITUDES)
+    # Rutas para Crear, Leer, Actualizar y Borrar (Ocultar) solicitudes
+    # ==========================================================================
+    path('api/listar-solicitudes/', views.listar_solicitudes, name='listar_solicitudes'),
+    path('api/crear-solicitud/', views.crear_solicitud, name='crear_solicitud'),
+    
+    # ¡OJO! Agregué esta línea porque la función 'editar_solicitud' existía en tu views.py
+    path('api/editar-solicitud/', views.editar_solicitud, name='editar_solicitud'),
+
+    # Esta ruta recibe el ID en la URL porque la vista así lo requiere
+    path('api/ocultar-solicitud/<int:id_solicitud>/', views.ocultar_solicitud, name='ocultar_solicitud'),
 ]
