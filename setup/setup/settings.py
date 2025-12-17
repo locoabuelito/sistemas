@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'usuarios',
     'reparacion_warehouse',
     'prestamos',
+    'laboratorio',
 ]
 
 MIDDLEWARE = [
