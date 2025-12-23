@@ -27,5 +27,6 @@ urlpatterns = [
     path('prestamos/', include('prestamos.urls')),
     path('admin/', admin.site.urls),
     path('usuarios/', include(('usuarios.urls', 'usuarios'), namespace='usuarios')),
+    path('laboratorio/', include('laboratorio.urls')),
     path('', RedirectView.as_view(url='/usuarios/login/')),
 ]

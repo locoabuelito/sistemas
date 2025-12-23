@@ -1,0 +1,524 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio Técnico - Gestión de Reparaciones</title>
+    <style>
+        /* =========================================
+           1. VARIABLES Y ESTILOS GLOBALES (TEMA VIOLETA)
+           ========================================= */
+        :root {
+            /* Paleta Principal (VIOLETA) - Diferenciador del Laboratorio */
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            
+            /* Textos y Fondos (Base idéntica a Warehouse) */
+            --dark-color: #0f172a;     /* Texto Principal */
+            --gray-color: #64748b;     /* Texto Secundario */
+            --light-gray: #e2e8f0;     /* Bordes */
+            --background-color: #f8fafc;
+            
+            /* Estados del Workflow */
+            --warning-color: #f59e0b; /* Naranja -> Pendiente */
+            --active-color: #7c3aed;  /* Violeta -> En Proceso */
+            --success-color: #10b981; /* Verde -> Completado */
+            --error-color: #ef4444;
+
+            /* Fondo General (Degradado Institucional Violeta) */
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-primary);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark-color);
+        }
+
+        /* =========================================
+           2. LAYOUT PRINCIPAL (CONTENEDOR FLOTANTE)
+           ========================================= */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98); /* Blanco semi-transparente */
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); /* Sombra profunda */
+        }
+
+        /* Botón "Volver" */
+        .back-link {
+            display: inline-block; margin-bottom: 20px;
+            color: var(--primary-color); text-decoration: none;
+            font-weight: 700; padding: 8px 16px;
+            background: white; border-radius: 8px;
+            border: 2px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        .back-link:hover { background: var(--primary-color); color: white; }
+
+        /* Cabecera del Panel */
+        .header { text-align: center; margin-bottom: 35px; }
+        .header h1 { font-size: 2.2rem; margin-bottom: 5px; color: var(--dark-color); }
+        .header p { color: var(--gray-color); }
+
+        /* =========================================
+           3. ESTADÍSTICAS (KPIs)
+           ========================================= */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px; margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white; padding: 15px;
+            border-radius: 10px; text-align: center;
+            border-left: 5px solid var(--primary-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        .stat-number { font-size: 1.8rem; font-weight: 800; color: var(--primary-color); }
+        .stat-label { color: var(--gray-color); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; }
+
+        /* =========================================
+           4. ESTRUCTURA DE COLUMNAS (WORKFLOW)
+           ========================================= */
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 50% Izquierda (Cola) - 50% Derecha (Mesa) */
+            gap: 30px;
+            min-height: 600px;
+        }
+        @media (max-width: 900px) {
+            .content { grid-template-columns: 1fr; } /* Móvil: 1 columna */
+        }
+
+        /* Tarjeta Contenedora de Columna */
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
+            height: 100%; /* Altura completa */
+            display: flex; flex-direction: column;
+        }
+        
+        /* Título de la Columna */
+        .card h3 { 
+            color: var(--primary-color); margin-bottom: 20px; 
+            font-size: 1.25rem; border-bottom: 2px solid #f1f5f9; 
+            padding-bottom: 10px; 
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        /* Contador pequeño en el título */
+        .badge-count {
+            background: var(--primary-light); color: var(--primary-dark);
+            padding: 2px 10px; border-radius: 12px; font-size: 0.9rem; font-weight: bold;
+        }
+
+        /* Área Scrollable de Tickets */
+        .ticket-list {
+            flex-grow: 1; overflow-y: auto; padding-right: 5px; max-height: 650px;
+        }
+        .ticket-list::-webkit-scrollbar { width: 6px; }
+        .ticket-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+        /* =========================================
+           5. DISEÑO DEL TICKET INDIVIDUAL
+           ========================================= */
+        .ticket-item {
+            background: white; border-radius: 10px; margin-bottom: 15px;
+            border: 1px solid #e2e8f0; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03); 
+            padding: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative; overflow: hidden;
+        }
+        .ticket-item:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.08); }
+
+        /* Bordes laterales según estado */
+        .ticket-item.pendiente { border-left: 5px solid var(--warning-color); }
+        .ticket-item.proceso { border-left: 5px solid var(--primary-color); background: #fdfbff; }
+
+        /* Cabecera del Ticket (ID y Fecha) */
+        .ticket-header {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.85rem; color: #94a3b8; font-weight: 700; margin-bottom: 8px;
+            border-bottom: 1px solid #f1f5f9; padding-bottom: 5px;
+        }
+
+        .ticket-title { font-size: 1.1rem; font-weight: 800; color: var(--dark-color); margin-bottom: 2px; }
+        .ticket-sn { font-family: monospace; font-size: 0.9rem; color: #64748b; display: block; margin-bottom: 10px; }
+
+        /* Caja de Descripción del Problema */
+        .problem-box {
+            background: #fffbeb; color: #92400e; padding: 10px;
+            border-radius: 6px; font-size: 0.9rem; margin-bottom: 15px;
+            border: 1px dashed #fcd34d;
+        }
+        .problem-label { font-weight: bold; font-size: 0.75rem; text-transform: uppercase; color: #b45309; display: block; margin-bottom: 3px;}
+        .problem-text { font-style: italic; }
+
+        /* Información del Técnico */
+        .tech-info { font-size: 0.85rem; color: #64748b; margin-bottom: 5px; }
+
+        /* Botones de Acción dentro del Ticket */
+        .btn-action {
+            width: 100%; padding: 10px; border-radius: 6px; border: none; font-size: 0.9rem;
+            font-weight: 700; cursor: pointer; transition: 0.2s; margin-top: 10px;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        
+        /* Estilo Botón "Iniciar" (Naranja suave) */
+        .btn-start { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
+        .btn-start:hover { background: #ffedd5; }
+
+        /* Estilo Botón "Finalizar" (Violeta sólido) */
+        .btn-finish { background: var(--primary-color); color: white; box-shadow: 0 4px 6px rgba(124, 58, 237, 0.2); }
+        .btn-finish:hover { background: var(--primary-dark); }
+
+        /* =========================================
+           6. MODAL DE FINALIZACIÓN
+           ========================================= */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px);
+            z-index: 2000; display: none; justify-content: center; align-items: center;
+            animation: fadeIn 0.2s ease-out;
+        }
+        .modal-box {
+            background: white; width: 90%; max-width: 600px;
+            border-radius: 16px; box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            overflow: hidden; transform: scale(0.95); animation: scaleIn 0.2s forwards;
+        }
+
+        .modal-header {
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #e2e8f0; background: #f8fafc;
+        }
+        .modal-header h2 { font-size: 1.25rem; margin: 0; color: var(--dark-color); }
+        .close-modal { font-size: 1.8rem; cursor: pointer; color: #94a3b8; line-height: 0.8; }
+        .close-modal:hover { color: var(--error-color); }
+        
+        .modal-body { padding: 25px; }
+        
+        textarea {
+            width: 100%; height: 130px; padding: 12px; border: 1px solid #cbd5e1;
+            border-radius: 8px; font-size: 0.95rem; resize: vertical; margin-top: 10px;
+            font-family: inherit;
+        }
+        textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15); }
+
+        .modal-footer {
+            padding: 15px 25px; background: #f8fafc; border-top: 1px solid #e2e8f0;
+            display: flex; justify-content: flex-end; gap: 12px;
+        }
+
+        .btn-cancelar {
+            padding: 10px 20px; background: white; border: 1px solid #cbd5e1;
+            color: #64748b; border-radius: 8px; font-weight: 600; cursor: pointer;
+        }
+        .btn-confirmar {
+            padding: 10px 20px; background: var(--primary-color); border: none;
+            color: white; border-radius: 8px; font-weight: 600; cursor: pointer;
+        }
+        .btn-confirmar:hover { background: var(--primary-dark); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        
+        <a href="/" class="back-link">← Menú Principal</a>
+
+        <div class="header">
+            <h1>🔬 Panel de Laboratorio</h1>
+            <p>Diagnóstico técnico y ejecución de reparaciones</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="count-total">0</div>
+                <div class="stat-label">Total en Lab</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-pendientes" style="color: var(--warning-color);">0</div>
+                <div class="stat-label">En Cola</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-proceso">0</div>
+                <div class="stat-label">En Mesa</div>
+            </div>
+        </div>
+
+        <div class="content">
+            
+            <div class="card" style="border-top: 4px solid var(--primary-color);">
+                <h3>
+                    <span>📥 Cola de Entrada</span>
+                    <span class="badge-count" id="badge-pendientes" style="background: var(--primary-color); color: white;">0</span>
+                </h3>
+                <div id="lista-pendientes" class="ticket-list">
+                    <p style="text-align:center; padding: 40px; color: #94a3b8;">
+                        ⏳ Cargando tickets...
+                    </p>
+                </div>
+            </div>
+
+            <div class="card" style="border-top: 4px solid var(--primary-color);">
+                <h3>
+                    <span>🔨 Mesa de Trabajo</span>
+                    <span class="badge-count" id="badge-proceso" style="background: var(--primary-color); color: white;">0</span>
+                </h3>
+                <div id="lista-proceso" class="ticket-list">
+                    </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="modalSolucion" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>✅ Finalizar Reparación</h2>
+                <span class="close-modal" onclick="cerrarModal()">×</span>
+            </div>
+            
+            <div class="modal-body">
+                <p style="color: #64748b; margin-bottom: 10px;">
+                    Por favor, describe el procedimiento técnico realizado para solucionar la falla:
+                </p>
+                <input type="hidden" id="fin_id_solicitud">
+                <textarea id="fin_solucion" placeholder="Ej: Se realizó limpieza ultrasónica, cambio de ventilador frontal y actualización de firmware..."></textarea>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn-confirmar" id="btnGuardarSolucion" onclick="enviarFinalizacion()">Guardar y Terminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. CONFIGURACIÓN API ---
+        const API = {
+            // LISTAR: Apunta a la vista de Warehouse porque ahí viven los datos (IMPORTANTE: Usar etiqueta url)
+            listar: "{% url 'listar_solicitudes' %}", 
+            
+            // ACCIONES: Apuntan a las vistas de Laboratorio
+            iniciar: "{% url 'lab_iniciar' %}",
+            finalizar: "{% url 'lab_finalizar' %}"
+        };
+
+        // --- 2. UTILS (CSRF Token) ---
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // --- 3. INICIALIZACIÓN ---
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarTickets();
+            // Actualización automática cada 30 segundos
+            setInterval(cargarTickets, 30000); 
+        });
+
+        // --- 4. CARGA DE DATOS ---
+        function cargarTickets() {
+            fetch(API.listar)
+                .then(res => res.json())
+                .then(data => {
+                    const pendientesDiv = document.getElementById('lista-pendientes');
+                    const procesoDiv = document.getElementById('lista-proceso');
+                    
+                    // Limpieza visual previa
+                    pendientesDiv.innerHTML = '';
+                    procesoDiv.innerHTML = '';
+                    
+                    let cPend = 0, cProc = 0;
+
+                    if(data.solicitudes) {
+                        data.solicitudes.forEach(s => {
+                            if (s.estado === 'pendiente') {
+                                renderTicket(s, pendientesDiv, 'pendiente');
+                                cPend++;
+                            } else if (s.estado === 'proceso') {
+                                renderTicket(s, procesoDiv, 'proceso');
+                                cProc++;
+                            }
+                        });
+                    }
+
+                    // Actualizar Contadores (KPIs)
+                    document.getElementById('count-total').textContent = cPend + cProc;
+                    document.getElementById('stat-pendientes').textContent = cPend;
+                    document.getElementById('stat-proceso').textContent = cProc;
+                    
+                    document.getElementById('badge-pendientes').textContent = cPend;
+                    document.getElementById('badge-proceso').textContent = cProc;
+
+                    // Mensajes de estado vacío
+                    if(cPend === 0) pendientesDiv.innerHTML = `
+                        <div style="text-align:center; padding:40px; color:#cbd5e1;">
+                            <div style="font-size:2.5rem; margin-bottom:10px; opacity:0.5">📥</div>
+                            Sin tickets pendientes
+                        </div>`;
+                    
+                    if(cProc === 0) procesoDiv.innerHTML = `
+                        <div style="text-align:center; padding:40px; color:#cbd5e1;">
+                            <div style="font-size:2.5rem; margin-bottom:10px; opacity:0.5">✨</div>
+                            Mesa de trabajo limpia
+                        </div>`;
+                })
+                .catch(err => {
+                    console.error("Error cargando tickets:", err);
+                    document.getElementById('lista-pendientes').innerHTML = 
+                        '<p style="color:var(--error-color); text-align:center;">⚠️ Error de conexión.</p>';
+                });
+        }
+
+        // --- 5. RENDERIZADO DE TICKETS ---
+        function renderTicket(s, container, tipo) {
+            let botonHtml = '';
+            
+            // Botones según columna
+            if (tipo === 'pendiente') {
+                botonHtml = `
+                    <button class="btn-action btn-start" onclick="iniciarReparacion(${s.id_solicitud})">
+                        🚀 Tomar Ticket
+                    </button>`;
+            } else {
+                botonHtml = `
+                    <button class="btn-action btn-finish" onclick="abrirModalFinalizar(${s.id_solicitud})">
+                        ✅ Finalizar Trabajo
+                    </button>`;
+            }
+
+            // CORRECCIÓN HORA: Usamos s.fecha_creacion directamente, sin .split()
+            const html = `
+                <div class="ticket-item ${tipo}">
+                    <div class="ticket-header">
+                        <span>#${s.id_solicitud}</span>
+                        <span>${s.fecha_creacion}</span> 
+                    </div>
+                    
+                    <div class="ticket-title">${s.equipo_modelo}</div>
+                    <span class="ticket-sn">SN: ${s.equipo_serial}</span>
+                    
+                    <div class="problem-box">
+                        <span class="problem-label">${s.tipo_problema}</span>
+                        <div class="problem-text">"${s.descripcion}"</div>
+                    </div>
+                    
+                    <div class="tech-info">
+                        Reportado por: <strong>${s.tecnico_nombre}</strong>
+                    </div>
+
+                    ${botonHtml}
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        // --- 6. ACCIONES (API CALLS) ---
+
+        // Iniciar Reparación (Pendiente -> Proceso)
+        function iniciarReparacion(id) {
+            if(!confirm("¿Confirmas que inicias el diagnóstico de este equipo?")) return;
+
+            fetch(API.iniciar, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken')},
+                body: JSON.stringify({ id_solicitud: id })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    cargarTickets(); // Recargar para mover la tarjeta
+                } else {
+                    alert("Error: " + data.message);
+                }
+            });
+        }
+
+        // Lógica del Modal de Finalización
+        const modal = document.getElementById('modalSolucion');
+
+        function abrirModalFinalizar(id) {
+            document.getElementById('fin_id_solicitud').value = id;
+            document.getElementById('fin_solucion').value = "";
+            modal.style.display = 'flex';
+            // Auto-foco en el textarea
+            setTimeout(() => document.getElementById('fin_solucion').focus(), 100);
+        }
+
+        function cerrarModal() { modal.style.display = 'none'; }
+
+        // Finalizar Reparación (Proceso -> Reparado)
+        function enviarFinalizacion() {
+            const id = document.getElementById('fin_id_solicitud').value;
+            const sol = document.getElementById('fin_solucion').value;
+            const btn = document.getElementById('btnGuardarSolucion');
+
+            if (!sol.trim()) { 
+                alert("⚠️ Es obligatorio detallar la solución técnica."); 
+                return; 
+            }
+
+            btn.textContent = "Guardando..."; btn.disabled = true;
+
+            fetch(API.finalizar, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken')},
+                body: JSON.stringify({ id_solicitud: id, solucion_tecnica: sol })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    cerrarModal();
+                    cargarTickets();
+                    // Opcional: Podrías añadir un toast de éxito aquí
+                } else {
+                    alert("Error: " + data.message);
+                }
+            })
+            .catch(err => alert("Error de conexión"))
+            .finally(() => {
+                btn.textContent = "Guardar y Terminar"; btn.disabled = false;
+            });
+        }
+        
+        // Cerrar con tecla ESC
+        document.addEventListener('keydown', function(event){
+            if(event.key === "Escape"){ cerrarModal(); }
+        });
+        
+        // Cerrar clic fuera del modal
+        window.onclick = function(event) {
+            if (event.target == modal) cerrarModal();
+        }
+    </script>
+</body>
+</html>

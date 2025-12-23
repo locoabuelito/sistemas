@@ -21,6 +21,9 @@
             --light-gray: #e2e8f0;
             --background-color: #f8fafc;
             --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            
+            /* Color Específico para Laboratorio (Violeta) */
+            --lab-color: #7c3aed;
         }
 
         * {
@@ -123,7 +126,7 @@
             position: relative;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.3);
-            min-height: 220px;
+            min-height: 240px; /* Ajustado un poco para uniformidad */
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -203,6 +206,11 @@
         /* Colores específicos para cada card */
         .card-reparacion-warehouse:hover {
             border-left-color: #2563eb;
+        }
+
+        /* --- NUEVO ESTILO LABORATORIO --- */
+        .card-laboratorio:hover {
+            border-left-color: #7c3aed; /* Violeta */
         }
 
         .card-reparacion-hydro:hover {
@@ -360,7 +368,6 @@
         {% endif %}
 
         <div class="header">
-            <!-- Información del usuario y logout -->
             <div class="user-info">
                 <div class="user-details">
                     <div class="user-name">{{ user_info.nombre_tecnico }}</div>
@@ -376,7 +383,6 @@
         </div>
 
         <div class="menu-grid">
-            <!-- Card 1: Reparacion Warehouse -->
             <a href="{% url 'reparacion_warehouse' %}" class="menu-card card-reparacion-warehouse">
                 <div class="card-icon">🏢</div>
                 <div class="card-title">Reparación Warehouse</div>
@@ -396,7 +402,24 @@
                 </div> {% endcomment %}
             </a>
 
-            <!-- Card 2: Reparacion Hydro -->
+            <a href="{% url 'laboratorio_dashboard' %}" class="menu-card card-laboratorio">
+                <div class="card-icon" style="color: #7c3aed;">🔬</div>
+                <div class="card-title">Laboratorio Técnico</div>
+                <div class="card-description">
+                    Panel exclusivo para técnicos de laboratorio. Diagnóstico, reparación y finalización de tickets de mantenimiento.
+                </div>
+                <div class="card-stats">
+                    <div class="stat-item">
+                        <div class="stat-number" style="color: #7c3aed;">--</div>
+                        <div class="stat-label">En Cola</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" style="color: #7c3aed;">--</div>
+                        <div class="stat-label">En Mesa</div>
+                    </div>
+                </div>
+            </a>
+
             <a href="/menu-principal/reparacion-hydro/" class="menu-card card-reparacion-hydro">
                 <div class="card-icon">💧</div>
                 <div class="card-title">Reparación Hydro</div>
@@ -416,7 +439,6 @@
                 </div>
             </a>
 
-            <!-- Card 3: Historial de reparaciones -->
             <a href="/menu-principal/historial-reparaciones/" class="menu-card card-historial">
                 <div class="card-icon">📊</div>
                 <div class="card-title">Historial de Reparaciones</div>
@@ -436,7 +458,6 @@
                 </div>
             </a>
 
-            <!-- Card 4: Informes Reparacion Warehouse -->
             <a href="/menu-principal/informes-warehouse/" class="menu-card card-informes-warehouse">
                 <div class="card-icon">📋</div>
                 <div class="card-title">Informes Reparación Warehouse</div>
@@ -456,7 +477,6 @@
                 </div>
             </a>
 
-            <!-- Card 5: Informes Reparacion Hydro -->
             <a href="/menu-principal/informes-hydro/" class="menu-card card-informes-hydro">
                 <div class="card-icon">📈</div>
                 <div class="card-title">Informes Reparación Hydro</div>
@@ -476,7 +496,6 @@
                 </div>
             </a>
 
-            <!-- NUEVO CARD 6: Préstamos de Herramientas -->
             <a href="{% url 'prestamos' %}" class="menu-card card-prestamos">
                 <div class="card-icon">🛠️</div>
                 <div class="card-title">
@@ -499,7 +518,6 @@
                 </div>
             </a>
 
-            <!-- NUEVO CARD 7: Control de Inventarios -->
             <a href="{% url 'control_inventarios' %}" class="menu-card card-inventario">
                 <div class="card-icon">📦</div>
                 <div class="card-title">

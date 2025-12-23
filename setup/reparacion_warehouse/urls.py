@@ -34,8 +34,4 @@ urlpatterns = [
     # Esta ruta permite asignar una ubicación física (Rack) al equipo
     path('api/obtener-posiciones/', views.obtener_posiciones_rack, name='obtener_posiciones_rack'),
     
-    # --- NUEVAS RUTAS LABORATORIO ---
-    path('laboratorio/', views.laboratorio_view, name='laboratorio_view'), # Pantalla del Técnico
-    path('api/lab-iniciar/', views.iniciar_reparacion, name='lab_iniciar'),
-    path('api/lab-finalizar/', views.finalizar_reparacion, name='lab_finalizar'),
 ]
