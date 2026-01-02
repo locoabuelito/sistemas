@@ -109,7 +109,7 @@ def obtener_equipos_por_warehouse(request):
         asignaciones = AsignacionUbicacionWarehouse.objects.filter(**filtros).select_related(
             'id_equipos_warehouse', 
             'id_ubicacion_warehouse'
-        )
+        ).order_by('id_ubicacion_warehouse__fila', 'id_ubicacion_warehouse__columna')
         
         print(f"📉 Equipos encontrados: {asignaciones.count()}")
         

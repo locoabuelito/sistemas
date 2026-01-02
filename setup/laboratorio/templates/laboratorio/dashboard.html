@@ -293,7 +293,7 @@
         <div class="modal-box">
             <div class="modal-header">
                 <h2>✅ Finalizar Reparación</h2>
-                <span class="close-modal" onclick="cerrarModal()">×</span>
+                <span class="close-modal" onclick="cerrarModalFinalizar()">×</span>
             </div>
             
             <div class="modal-body">
@@ -305,8 +305,33 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn-cancelar" onclick="cerrarModalFinalizar()">Cancelar</button>
                 <button class="btn-confirmar" id="btnGuardarSolucion" onclick="enviarFinalizacion()">Guardar y Terminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TOMAR TICKET -->
+    <div id="modalTomar" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>🚀 Iniciar Reparación</h2>
+                <span class="close-modal" onclick="cerrarModalTomar()">×</span>
+            </div>
+            
+            <div class="modal-body">
+                <p style="font-size: 1.1rem; color: var(--dark-color); margin-bottom: 10px;">
+                    ¿Confirmas que deseas tomar este ticket?
+                </p>
+                <p style="color: #64748b;">
+                    El equipo pasará a tu mesa de trabajo e iniciará el proceso de diagnóstico.
+                </p>
+                <input type="hidden" id="tomar_id_solicitud">
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-cancelar" onclick="cerrarModalTomar()">Cancelar</button>
+                <button class="btn-confirmar" id="btnConfirmarInicio" onclick="enviarInicio()">Sí, Iniciar</button>
             </div>
         </div>
     </div>
@@ -406,7 +431,7 @@
             // Botones según columna
             if (tipo === 'pendiente') {
                 botonHtml = `
-                    <button class="btn-action btn-start" onclick="iniciarReparacion(${s.id_solicitud})">
+                    <button class="btn-action btn-start" onclick="abrirModalTomar(${s.id_solicitud})">
                         🚀 Tomar Ticket
                     </button>`;
             } else {
@@ -444,9 +469,54 @@
 
         // --- 6. ACCIONES (API CALLS) ---
 
+        // --- 6. ACCIONES (API CALLS) ---
+
+        // ========================
+        // GESTIÓN DE MODALES
+        // ========================
+        const modalSolucion = document.getElementById('modalSolucion');
+        const modalTomar = document.getElementById('modalTomar');
+
+        // Modal Finalizar
+        function abrirModalFinalizar(id) {
+            document.getElementById('fin_id_solicitud').value = id;
+            document.getElementById('fin_solucion').value = "";
+            modalSolucion.style.display = 'flex';
+            setTimeout(() => document.getElementById('fin_solucion').focus(), 100);
+        }
+        function cerrarModalFinalizar() { modalSolucion.style.display = 'none'; }
+
+        // Modal Tomar (Iniciar)
+        function abrirModalTomar(id) {
+            document.getElementById('tomar_id_solicitud').value = id;
+            modalTomar.style.display = 'flex';
+            setTimeout(() => document.getElementById('btnConfirmarInicio').focus(), 100);
+        }
+        function cerrarModalTomar() { modalTomar.style.display = 'none'; }
+
+        // Cerrar con Escape y Click fuera
+        document.addEventListener('keydown', function(event){
+            if(event.key === "Escape"){ 
+                cerrarModalFinalizar(); 
+                cerrarModalTomar(); 
+            }
+        });
+        
+        window.onclick = function(event) {
+            if (event.target == modalSolucion) cerrarModalFinalizar();
+            if (event.target == modalTomar) cerrarModalTomar();
+        }
+
+        // ========================
+        // LOGICA DE NEGOCIO
+        // ========================
+
         // Iniciar Reparación (Pendiente -> Proceso)
-        function iniciarReparacion(id) {
-            if(!confirm("¿Confirmas que inicias el diagnóstico de este equipo?")) return;
+        function enviarInicio() {
+            const id = document.getElementById('tomar_id_solicitud').value;
+            const btn = document.getElementById('btnConfirmarInicio');
+            
+            btn.textContent = "Iniciando..."; btn.disabled = true;
 
             fetch(API.iniciar, {
                 method: 'POST',
@@ -456,25 +526,17 @@
             .then(res => res.json())
             .then(data => {
                 if(data.status === 'success') {
-                    cargarTickets(); // Recargar para mover la tarjeta
+                    cerrarModalTomar();
+                    cargarTickets(); 
                 } else {
                     alert("Error: " + data.message);
                 }
+            })
+            .catch(err => alert("Error de conexión"))
+            .finally(() => {
+                btn.textContent = "Sí, Iniciar"; btn.disabled = false;
             });
         }
-
-        // Lógica del Modal de Finalización
-        const modal = document.getElementById('modalSolucion');
-
-        function abrirModalFinalizar(id) {
-            document.getElementById('fin_id_solicitud').value = id;
-            document.getElementById('fin_solucion').value = "";
-            modal.style.display = 'flex';
-            // Auto-foco en el textarea
-            setTimeout(() => document.getElementById('fin_solucion').focus(), 100);
-        }
-
-        function cerrarModal() { modal.style.display = 'none'; }
 
         // Finalizar Reparación (Proceso -> Reparado)
         function enviarFinalizacion() {
@@ -497,9 +559,8 @@
             .then(res => res.json())
             .then(data => {
                 if(data.status === 'success') {
-                    cerrarModal();
+                    cerrarModalFinalizar();
                     cargarTickets();
-                    // Opcional: Podrías añadir un toast de éxito aquí
                 } else {
                     alert("Error: " + data.message);
                 }
@@ -508,16 +569,6 @@
             .finally(() => {
                 btn.textContent = "Guardar y Terminar"; btn.disabled = false;
             });
-        }
-        
-        // Cerrar con tecla ESC
-        document.addEventListener('keydown', function(event){
-            if(event.key === "Escape"){ cerrarModal(); }
-        });
-        
-        // Cerrar clic fuera del modal
-        window.onclick = function(event) {
-            if (event.target == modal) cerrarModal();
         }
     </script>
 </body>

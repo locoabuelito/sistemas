@@ -14,13 +14,13 @@
             --primary-color: #2563eb;
             --primary-dark: #1d4ed8;
             --primary-light: #3b82f6;
-            
+
             /* Textos y Fondos */
             --dark-color: #0f172a;
             --gray-color: #64748b;
             --light-gray: #e2e8f0;
             --background-color: #f8fafc;
-            
+
             /* Estados */
             --success-color: #10b981;
             --warning-color: #f59e0b;
@@ -30,7 +30,11 @@
             --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -54,28 +58,51 @@
 
         /* Botón Volver */
         .back-link {
-            display: inline-block; margin-bottom: 20px;
-            color: var(--primary-color); text-decoration: none;
-            font-weight: 700; padding: 8px 16px;
-            background: white; border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 700;
+            padding: 8px 16px;
+            background: white;
+            border-radius: 8px;
             border: 2px solid var(--primary-color);
             transition: all 0.3s ease;
         }
-        .back-link:hover { background: var(--primary-color); color: white; }
+
+        .back-link:hover {
+            background: var(--primary-color);
+            color: white;
+        }
 
         /* Cabecera */
-        .header { text-align: center; margin-bottom: 35px; }
-        .header h1 { font-size: 2.2rem; margin-bottom: 5px; color: var(--dark-color); }
-        .header p { color: var(--gray-color); }
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            color: var(--dark-color);
+        }
+
+        .header p {
+            color: var(--gray-color);
+        }
 
         /* Grid de 2 Columnas (Formulario vs Lista) */
         .content {
             display: grid;
-            grid-template-columns: 400px 1fr; /* Izquierda fija, Derecha flexible */
+            grid-template-columns: 400px 1fr;
+            /* Izquierda fija, Derecha flexible */
             gap: 30px;
         }
+
         @media (max-width: 900px) {
-            .content { grid-template-columns: 1fr; } 
+            .content {
+                grid-template-columns: 1fr;
+            }
         }
 
         .card {
@@ -86,10 +113,13 @@
             border: 1px solid #f1f5f9;
             height: fit-content;
         }
-        .card h3 { 
-            color: var(--primary-color); margin-bottom: 20px; 
-            font-size: 1.25rem; border-bottom: 2px solid #f1f5f9; 
-            padding-bottom: 10px; 
+
+        .card h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.25rem;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 10px;
         }
 
         /* =========================================
@@ -98,209 +128,463 @@
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 15px; margin-bottom: 30px;
+            gap: 15px;
+            margin-bottom: 30px;
         }
+
         .stat-card {
-            background: white; padding: 15px;
-            border-radius: 10px; text-align: center;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
             border-left: 5px solid var(--primary-color);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
-        .stat-number { font-size: 1.8rem; font-weight: 800; color: var(--primary-color); }
-        .stat-label { color: var(--gray-color); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            color: var(--gray-color);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
 
         /* =========================================
            4. FORMULARIOS E INPUTS
            ========================================= */
-        .form-group { margin-bottom: 18px; }
-        .form-group label { 
-            display: block; margin-bottom: 6px; 
-            font-weight: 600; color: var(--dark-color); font-size: 0.9rem; 
+        .form-group {
+            margin-bottom: 18px;
         }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%; padding: 11px;
-            border: 1px solid #cbd5e1; border-radius: 8px;
-            font-size: 0.95rem; transition: border-color 0.2s;
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--dark-color);
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
             background-color: #fff;
         }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            outline: none; border-color: var(--primary-color); 
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
         }
-        .form-group input:disabled, .form-group select:disabled {
-            background-color: #f1f5f9; color: #94a3b8; cursor: not-allowed;
+
+        .form-group input:disabled,
+        .form-group select:disabled {
+            background-color: #f1f5f9;
+            color: #94a3b8;
+            cursor: not-allowed;
         }
-        .form-group textarea { resize: vertical; min-height: 90px; }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
 
         /* Botones Generales */
         .submit-btn {
-            background: var(--primary-color); color: white; border: none;
-            padding: 12px; border-radius: 8px; cursor: pointer;
-            font-weight: 700; width: 100%; font-size: 1rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            width: 100%;
+            font-size: 1rem;
             transition: background 0.3s;
         }
-        .submit-btn:hover { background: var(--primary-dark); }
-        
-        #btnCancelarEdicion { background: #64748b; display: none; }
+
+        .submit-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        #btnCancelarEdicion {
+            background: #64748b;
+            display: none;
+        }
 
         /* =========================================
            5. FICHA TÉCNICA (Info Azul en Formulario)
            ========================================= */
         #fichaTecnica {
-            position: relative; display: none;
-            margin-bottom: 20px; padding: 15px;
-            background: #eff6ff; border-radius: 8px;
+            position: relative;
+            display: none;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #eff6ff;
+            border-radius: 8px;
             border: 1px solid #bfdbfe;
         }
+
         .close-info {
-            position: absolute; top: 10px; right: 15px;
-            cursor: pointer; font-size: 1.4rem; color: var(--error-color);
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            cursor: pointer;
+            font-size: 1.4rem;
+            color: var(--error-color);
             line-height: 1;
         }
+
         .datos-grid {
-            display: grid; grid-template-columns: 1fr 1fr;
-            column-gap: 15px; row-gap: 8px; margin-top: 10px;
-            font-size: 0.9rem; color: #334155;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 15px;
+            row-gap: 8px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #334155;
         }
-        .dato-label { font-weight: 700; color: #64748b; margin-right: 4px; }
-        .dato-valor { font-weight: 600; color: #0f172a; }
-        .dato-item.full-width { grid-column: span 2; word-break: break-all; }
-        
+
+        .dato-label {
+            font-weight: 700;
+            color: #64748b;
+            margin-right: 4px;
+        }
+
+        .dato-valor {
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .dato-item.full-width {
+            grid-column: span 2;
+            word-break: break-all;
+        }
+
         .ubicacion-box {
-            margin-top: 12px; padding-top: 10px; 
-            border-top: 1px dashed #93c5fd; color: #0369a1; 
-            font-size: 0.9rem; display: flex; align-items: center;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px dashed #93c5fd;
+            color: #0369a1;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
         }
 
         /* =========================================
            6. LISTA DE SOLICITUDES (Estilos Corregidos)
            ========================================= */
-        .solicitudes-list { max-height: 750px; overflow-y: auto; padding-right: 5px; }
-        
+        .solicitudes-list {
+            max-height: 750px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
         /* Estilo de Tarjeta Individual */
         .solicitud-item {
-            background: white; border-radius: 10px; margin-bottom: 15px;
-            border: 1px solid #e2e8f0; border-left: 5px solid var(--primary-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.03); overflow: hidden;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            overflow: hidden;
             transition: transform 0.2s;
         }
-        .solicitud-item:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.08); }
+
+        .solicitud-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+        }
 
         .solicitud-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 15px; background: #f8fafc; border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
         }
-        .solicitud-id { font-weight: 700; color: var(--dark-color); font-family: monospace; }
-        
+
+        .solicitud-id {
+            font-weight: 700;
+            color: var(--dark-color);
+            font-family: monospace;
+        }
+
         /* Badges de Estado */
-        .solicitud-status { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
-        .status-pendiente { background: #fffbeb; color: #b45309; border: 1px solid #fcd34d; }
-        .status-proceso { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
-        .status-completado { background: #f0fdf4; color: #15803d; border: 1px solid #86efac; }
+        .solicitud-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .status-pendiente {
+            background: #fffbeb;
+            color: #b45309;
+            border: 1px solid #fcd34d;
+        }
+
+        .status-proceso {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+        }
+
+        .status-completado {
+            background: #f0fdf4;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
 
         .solicitud-location {
-            background: #eff6ff; color: #1e40af; padding: 8px 15px;
-            font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;
+            background: #eff6ff;
+            color: #1e40af;
+            padding: 8px 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         /* === GRID DE DETALLES (Anti-superposición) === */
         .solicitud-details {
-            padding: 15px; 
-            display: grid; 
+            padding: 15px;
+            display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 25px; 
+            gap: 25px;
             font-size: 0.9rem;
         }
-        .detail-item { display: flex; flex-direction: column; }
-        .detail-label { 
-            font-size: 0.7rem; color: #94a3b8; 
-            text-transform: uppercase; font-weight: 700; margin-bottom: 4px; 
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
         }
-        .detail-value { 
-            font-weight: 600; color: #334155; 
+
+        .detail-label {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #334155;
         }
 
         /* Acciones de Tarjeta */
         .card-actions {
-            padding: 10px 15px; background: #fff; border-top: 1px solid #f1f5f9;
-            display: flex; justify-content: flex-end; gap: 8px;
+            padding: 10px 15px;
+            background: #fff;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
         }
+
         .btn-action {
-            padding: 8px 14px; border-radius: 6px; border: none; font-size: 0.85rem;
-            font-weight: 600; transition: 0.2s;
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: 0.2s;
         }
 
         /* Botón Activo (Verde) */
-        .btn-edit { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; cursor: pointer; }
-        .btn-edit:hover { background: #bbf7d0; }
+        .btn-edit {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+            cursor: pointer;
+        }
+
+        .btn-edit:hover {
+            background: #bbf7d0;
+        }
 
         /* === Botón Deshabilitado (Gris) === */
         .btn-disabled {
-            background: #f1f5f9; 
-            color: #94a3b8; 
+            background: #f1f5f9;
+            color: #94a3b8;
             border: 1px solid #cbd5e1;
             cursor: not-allowed;
-            pointer-events: none; /* Evita clics */
+            pointer-events: none;
+            /* Evita clics */
         }
 
         /* =========================================
            7. MODALES (Confirmación y Recepción)
            ========================================= */
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px);
-            z-index: 2000; display: none; justify-content: center; align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
             animation: fadeIn 0.2s ease-out;
         }
+
         .modal-box {
-            background: white; width: 90%; max-width: 600px;
-            border-radius: 16px; box-shadow: 0 25px 50px rgba(0,0,0,0.25);
-            overflow: hidden; transform: scale(0.95); animation: scaleIn 0.2s forwards;
+            background: white;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            transform: scale(0.95);
+            animation: scaleIn 0.2s forwards;
         }
 
         .modal-header {
-            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid #e2e8f0; background: #f8fafc;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
         }
-        .modal-header h2 { font-size: 1.25rem; margin: 0; color: var(--dark-color); }
-        .close-modal { font-size: 1.8rem; cursor: pointer; color: #94a3b8; line-height: 0.8; }
-        .close-modal:hover { color: var(--error-color); }
 
-        .modal-body { padding: 25px; }
+        .modal-header h2 {
+            font-size: 1.25rem;
+            margin: 0;
+            color: var(--dark-color);
+        }
+
+        .close-modal {
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #94a3b8;
+            line-height: 0.8;
+        }
+
+        .close-modal:hover {
+            color: var(--error-color);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
 
         .modal-footer {
-            padding: 15px 25px; background: #f8fafc; border-top: 1px solid #e2e8f0;
-            display: flex; justify-content: flex-end; gap: 12px;
+            padding: 15px 25px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
         }
 
         /* Botones de Modal */
         .btn-cancelar {
-            padding: 10px 20px; background: white; border: 1px solid #cbd5e1;
-            color: #64748b; border-radius: 8px; font-weight: 600; cursor: pointer;
+            padding: 10px 20px;
+            background: white;
+            border: 1px solid #cbd5e1;
+            color: #64748b;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
         }
-        .btn-cancelar:hover { background: #f1f5f9; }
-        
+
+        .btn-cancelar:hover {
+            background: #f1f5f9;
+        }
+
         .btn-confirmar {
-            padding: 10px 20px; background: var(--primary-color); border: none;
-            color: white; border-radius: 8px; font-weight: 600; cursor: pointer;
+            padding: 10px 20px;
+            background: var(--primary-color);
+            border: none;
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
             box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
         }
-        .btn-confirmar:hover { background: var(--primary-dark); }
+
+        .btn-confirmar:hover {
+            background: var(--primary-dark);
+        }
 
         /* Resumen en Modal Azul */
         .resumen-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
-            background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
         }
-        .resumen-item { display: flex; flex-direction: column; }
-        .resumen-item.full { grid-column: span 2; }
-        .resumen-label { font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; }
-        .resumen-valor { font-size: 0.95rem; color: #334155; font-weight: 600; }
-        .resumen-valor.highlight { color: var(--primary-color); }
+
+        .resumen-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .resumen-item.full {
+            grid-column: span 2;
+        }
+
+        .resumen-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .resumen-valor {
+            font-size: 0.95rem;
+            color: #334155;
+            font-weight: 600;
+        }
+
+        .resumen-valor.highlight {
+            color: var(--primary-color);
+        }
 
         /* Animaciones */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 
@@ -333,18 +617,18 @@
         </div>
 
         <div class="content">
-            
+
             <div class="card">
                 <h3>➕ Nueva Solicitud</h3>
                 <form id="solicitudForm">
                     <input type="hidden" id="edit_solicitud_id" value="">
-                    
+
                     <div class="form-group">
                         <label for="warehouse">Warehouse:</label>
                         <select id="warehouse" required onchange="cargarRacksDelWarehouse(this.value)">
                             <option value="">-- Seleccionar --</option>
                             {% for wh in warehouses %}
-                                <option value="{{ wh.id_ubicacion }}">{{ wh.nombre_ubicacion }}</option>
+                            <option value="{{ wh.id_ubicacion }}">{{ wh.nombre_ubicacion }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -365,29 +649,30 @@
 
                     <div id="fichaTecnica">
                         <div class="close-info" onclick="cerrarFicha()" title="Cerrar">×</div>
-                        <div style="font-weight:bold; color:#0369a1; font-size:1rem; border-bottom: 2px solid #bae6fd; padding-bottom:5px; margin-bottom: 10px;">
+                        <div
+                            style="font-weight:bold; color:#0369a1; font-size:1rem; border-bottom: 2px solid #bae6fd; padding-bottom:5px; margin-bottom: 10px;">
                             📋 Datos Técnicos
                         </div>
                         <div class="datos-grid">
                             <div class="dato-item">
-                                <span class="dato-label">IP:</span> 
+                                <span class="dato-label">IP:</span>
                                 <span id="infoIP" class="dato-valor">-</span>
                             </div>
                             <div class="dato-item">
-                                <span class="dato-label">MAC:</span> 
+                                <span class="dato-label">MAC:</span>
                                 <span id="infoMAC" class="dato-valor">-</span>
                             </div>
                             <div class="dato-item">
-                                <span class="dato-label">FW:</span> 
+                                <span class="dato-label">FW:</span>
                                 <span id="infoFirmware" class="dato-valor">-</span>
                             </div>
                             <div class="dato-item full-width">
-                                <span class="dato-label">SN:</span> 
+                                <span class="dato-label">SN:</span>
                                 <span id="infoSerial" class="dato-valor">-</span>
                             </div>
                         </div>
                         <div class="ubicacion-box">
-                            <span style="margin-right: 5px; font-size: 1.1rem;">📍</span> 
+                            <span style="margin-right: 5px; font-size: 1.1rem;">📍</span>
                             Ubicación: &nbsp; <strong id="infoUbicacion">Cargando...</strong>
                         </div>
                     </div>
@@ -406,23 +691,67 @@
 
                     <div class="form-group">
                         <label for="thCantidad">TH/s Afectados:</label>
-                        <input type="number" id="thCantidad" min="0" max="10000" step="0.1" required placeholder="Ej: 110.5">
+                        <input type="number" id="thCantidad" min="0" max="10000" step="0.1" required
+                            placeholder="Ej: 110.5">
                     </div>
 
                     <div class="form-group">
                         <label for="descripcion">Descripción detallada:</label>
-                        <textarea id="descripcion" required placeholder="Indique síntomas, logs o detalles extra..."></textarea>
+                        <textarea id="descripcion" required
+                            placeholder="Indique síntomas, logs o detalles extra..."></textarea>
                     </div>
 
-                    <div style="display: flex; gap: 10px; margin-top: 25px; padding-top: 15px; border-top: 1px solid #f1f5f9;">
+                    <div
+                        style="display: flex; gap: 10px; margin-top: 25px; padding-top: 15px; border-top: 1px solid #f1f5f9;">
                         <button type="submit" class="submit-btn" id="btnGuardar">Guardar Solicitud</button>
-                        <button type="button" class="submit-btn" id="btnCancelarEdicion" onclick="cancelarEdicion()">Cancelar</button>
+                        <button type="button" class="submit-btn" id="btnCancelarEdicion"
+                            onclick="cancelarEdicion()">Cancelar</button>
                     </div>
                 </form>
             </div>
 
             <div class="card">
-                <h3>📋 Solicitudes Activas</h3>
+                <div
+                    style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom: 2px solid #f1f5f9; padding-bottom:10px;">
+                    <h3 style="border:none; margin:0; padding:0;">📋 Solicitudes</h3>
+                    <div style="font-size:0.85rem; color:#94a3b8;">Historial completo</div>
+                </div>
+
+                <!-- BARRA DE FILTROS -->
+                <div
+                    style="background:#f8fafc; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #e2e8f0;">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+                        <div>
+                            <label
+                                style="display:block; font-size:0.75rem; font-weight:700; color:#64748b; margin-bottom:5px;">📅
+                                Fecha Inicio</label>
+                            <input type="date" id="filtroFechaInicio" onchange="aplicarFiltros()"
+                                style="width:100%; padding:6px; border:1px solid #cbd5e1; border-radius:6px;">
+                        </div>
+                        <div>
+                            <label
+                                style="display:block; font-size:0.75rem; font-weight:700; color:#64748b; margin-bottom:5px;">📅
+                                Fecha Fin</label>
+                            <input type="date" id="filtroFechaFin" onchange="aplicarFiltros()"
+                                style="width:100%; padding:6px; border:1px solid #cbd5e1; border-radius:6px;">
+                        </div>
+                        <div>
+                            <label
+                                style="display:block; font-size:0.75rem; font-weight:700; color:#64748b; margin-bottom:5px;">📌
+                                Estado</label>
+                            <select id="filtroEstado" onchange="aplicarFiltros()"
+                                style="width:100%; padding:6px; border:1px solid #cbd5e1; border-radius:6px;">
+                                <option value="todos">Todos</option>
+                                <option value="activos" selected>Solo Activos</option>
+                                <option value="pendiente">Pendientes</option>
+                                <option value="proceso">En Laboratorio</option>
+                                <option value="reparado">Reparados</option>
+                                <option value="completado">Completados (Histórico)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="solicitudes-list" id="solicitudesList">
                     <p style="text-align:center; padding: 40px; color: #94a3b8;">
                         ⏳ Cargando registros...
@@ -438,7 +767,7 @@
                 <h2>🚀 Confirmar Solicitud</h2>
                 <span class="close-modal" onclick="cerrarModal()">×</span>
             </div>
-            
+
             <div class="modal-body">
                 <p style="color: #64748b; margin-bottom: 15px;">
                     Por favor, verifica los datos antes de registrar la reparación:
@@ -467,7 +796,8 @@
                     </div>
                     <div class="resumen-item full">
                         <span class="resumen-label">Descripción:</span>
-                        <p style="font-size: 0.9rem; color: #475569; margin-top: 5px; background: white; padding: 5px; border: 1px dashed #cbd5e1;">
+                        <p
+                            style="font-size: 0.9rem; color: #475569; margin-top: 5px; background: white; padding: 5px; border: 1px dashed #cbd5e1;">
                             <span id="modDesc">-</span>
                         </p>
                     </div>
@@ -487,18 +817,20 @@
                 <h2 style="color: #3f6212;">📥 Recepcionar Equipo</h2>
                 <span class="close-modal" onclick="cerrarModalRecepcion()">×</span>
             </div>
-            
+
             <div class="modal-body">
                 <input type="hidden" id="rec_solicitud_id">
-                
-                <p style="color: #4d7c0f; margin-bottom: 20px; font-weight: 500; background: #f7fee7; padding: 10px; border-radius: 6px; border: 1px solid #bef264;">
-                    ℹ️ El equipo será marcado como <strong>"Completado"</strong> y deberás asignarle una nueva ubicación física.
+
+                <p
+                    style="color: #4d7c0f; margin-bottom: 20px; font-weight: 500; background: #f7fee7; padding: 10px; border-radius: 6px; border: 1px solid #bef264;">
+                    ℹ️ El equipo será marcado como <strong>"Completado"</strong> y deberás asignarle una nueva ubicación
+                    física.
                 </p>
 
                 <div class="form-group">
                     <label>Equipo a Recepcionar:</label>
-                    <input type="text" id="rec_equipo_texto" disabled 
-                           style="background: #f1f5f9; border: 1px solid #e2e8f0; font-weight: bold; color: #334155;">
+                    <input type="text" id="rec_equipo_texto" disabled
+                        style="background: #f1f5f9; border: 1px solid #e2e8f0; font-weight: bold; color: #334155;">
                 </div>
 
                 <div class="form-group">
@@ -506,7 +838,7 @@
                     <select id="rec_warehouse" onchange="cargarRacksRecepcion(this.value)">
                         <option value="">-- Seleccionar --</option>
                         {% for wh in warehouses %}
-                            <option value="{{ wh.id_ubicacion }}">{{ wh.nombre_ubicacion }}</option>
+                        <option value="{{ wh.id_ubicacion }}">{{ wh.nombre_ubicacion }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -526,14 +858,16 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Notas de Cierre (Opcional):</label>
-                    <textarea id="rec_notas" placeholder="Ej: Se cambió ventilador, actualizado firmware..."></textarea>
+                    <label>Notas de Cierre (Descripción Original):</label>
+                    <textarea id="rec_notas" readonly
+                        style="background-color: #f1f5f9; color: #64748b; font-style: italic;"></textarea>
                 </div>
             </div>
 
             <div class="modal-footer">
                 <button class="btn-cancelar" onclick="cerrarModalRecepcion()">Cancelar</button>
-                <button class="btn-confirmar" style="background: #65a30d;" onclick="guardarRecepcion()">📥 Finalizar y Guardar</button>
+                <button class="btn-confirmar" style="background: #65a30d;" onclick="guardarRecepcion()">📥 Finalizar y
+                    Guardar</button>
             </div>
         </div>
     </div>
@@ -583,7 +917,7 @@
         function cerrarModalRecepcion() {
             modalRec.style.display = 'none';
         }
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (event.target == modalConfirm) cerrarModal();
             if (event.target == modalRec) cerrarModalRecepcion();
         }
@@ -592,7 +926,7 @@
         function cargarRacksDelWarehouse(whId) {
             const rackSel = document.getElementById('rackSelect');
             const eqSel = document.getElementById('equipoSelect');
-            
+
             rackSel.innerHTML = '<option>Cargando...</option>'; rackSel.disabled = true;
             eqSel.innerHTML = '<option>Esperando Rack...</option>'; eqSel.disabled = true;
             cerrarFicha();
@@ -602,7 +936,7 @@
                 return;
             }
 
-            fetch(`${API.racks}?warehouse_id=${whId}`)
+            fetch(`${API.racks}?warehouse_id=${whId}&_t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(data => {
                     rackSel.innerHTML = '<option value="">-- Seleccionar Rack --</option>';
@@ -629,15 +963,15 @@
 
             if (!rackId) return;
 
-            fetch(`${API.equipos}?warehouse_id=${whId}&rack=${rackId}`)
+            fetch(`${API.equipos}?warehouse_id=${whId}&rack=${rackId}&_t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(data => {
                     eqSel.innerHTML = '<option value="">-- Seleccionar Equipo --</option>';
                     if (data.equipos && data.equipos.length > 0) {
                         data.equipos.forEach(eq => {
                             const op = document.createElement('option');
-                            op.value = eq.id; 
-                            
+                            op.value = eq.id;
+
                             let infoUbicacion = "";
                             if (eq.fila && eq.columna) {
                                 infoUbicacion = ` (Fila ${eq.fila}, Col ${eq.columna})`;
@@ -651,7 +985,7 @@
                             op.dataset.mac = eq.mac || '-';
                             op.dataset.fw = eq.firmware || '-';
                             op.dataset.sn = eq.serial || 'Sin Serial';
-                            
+
                             let ubicacionFull = `Rack ${rackId}`;
                             if (eq.fila && eq.columna) {
                                 ubicacionFull += ` - Fila ${eq.fila}, Columna ${eq.columna}`;
@@ -669,9 +1003,9 @@
                 });
         }
 
-        document.getElementById('equipoSelect').addEventListener('change', function() {
+        document.getElementById('equipoSelect').addEventListener('change', function () {
             const ficha = document.getElementById('fichaTecnica');
-            if(!this.value) { cerrarFicha(); return; }
+            if (!this.value) { cerrarFicha(); return; }
 
             const opt = this.options[this.selectedIndex];
             document.getElementById('infoIP').textContent = opt.dataset.ip;
@@ -679,7 +1013,7 @@
             document.getElementById('infoFirmware').textContent = opt.dataset.fw;
             document.getElementById('infoSerial').textContent = opt.dataset.sn;
             document.getElementById('infoUbicacion').textContent = opt.dataset.ubicacionFull;
-            
+
             ficha.style.display = 'block';
         });
 
@@ -689,7 +1023,7 @@
 
             const equipoId = document.getElementById('equipoSelect').value;
             const tipoProblemaId = document.getElementById('tipoProblema').value;
-            
+
             if (!equipoId || !tipoProblemaId) {
                 alert("⚠️ Por favor selecciona un Equipo y el Tipo de Problema.");
                 return;
@@ -719,8 +1053,8 @@
             const descripcion = document.getElementById('descripcion').value;
 
             const payload = {
-                equipo_id: equipoId,               
-                tipo_problema_id: tipoProblemaId,  
+                equipo_id: equipoId,
+                tipo_problema_id: tipoProblemaId,
                 th_cantidad: thCantidad,
                 descripcion: descripcion
             };
@@ -738,73 +1072,121 @@
                 },
                 body: JSON.stringify(payload)
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    document.getElementById('solicitudForm').reset();
-                    cerrarFicha();
-                    
-                    const rackSel = document.getElementById('rackSelect');
-                    rackSel.innerHTML = '<option value="">Esperando Warehouse...</option>'; rackSel.disabled = true;
-                    const equipoSel = document.getElementById('equipoSelect');
-                    equipoSel.innerHTML = '<option value="">Esperando Rack...</option>'; equipoSel.disabled = true;
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('solicitudForm').reset();
+                        cerrarFicha();
 
-                    cargarSolicitudesBD();
-                    cerrarModal();
-                    alert("✅ Solicitud creada exitosamente.");
-                } else {
-                    alert("❌ Error: " + data.message);
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert("Error de conexión al guardar.");
-            })
-            .finally(() => {
-                btnConfirm.textContent = txtOriginal;
-                btnConfirm.disabled = false;
-            });
+                        const rackSel = document.getElementById('rackSelect');
+                        rackSel.innerHTML = '<option value="">Esperando Warehouse...</option>'; rackSel.disabled = true;
+                        const equipoSel = document.getElementById('equipoSelect');
+                        equipoSel.innerHTML = '<option value="">Esperando Rack...</option>'; equipoSel.disabled = true;
+
+                        cargarSolicitudesBD();
+                        cerrarModal();
+                        // alert("✅ Solicitud creada exitosamente.");
+                    } else {
+                        alert("❌ Error: " + data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Error de conexión al guardar.");
+                })
+                .finally(() => {
+                    btnConfirm.textContent = txtOriginal;
+                    btnConfirm.disabled = false;
+                });
         }
 
         // --- 7. LISTADO Y RENDERIZADO (Actualizado: "Laboratorio") ---
+        // --- 7. LISTADO Y RENDERIZADO (Actualizado con Filtros) ---
+        let todasLasSolicitudes = [];
+
         function cargarSolicitudesBD() {
             fetch(API.listar)
                 .then(res => res.json())
                 .then(data => {
-                    const lista = document.getElementById('solicitudesList');
-                    lista.innerHTML = '';
-
-                    if (data.solicitudes && data.solicitudes.length > 0) {
-                        data.solicitudes.forEach(s => renderizarSolicitud(s));
-                        actualizarContadores(data.solicitudes);
+                    if (data.solicitudes) {
+                        todasLasSolicitudes = data.solicitudes;
+                        aplicarFiltros(); // Esto renderiza y cuenta
                     } else {
-                        lista.innerHTML = `
-                            <div style="text-align:center; padding:40px; color:#cbd5e1;">
-                                <div style="font-size:3rem; margin-bottom:10px;">✅</div>
-                                <p>No hay reparaciones pendientes</p>
-                            </div>`;
+                        todasLasSolicitudes = [];
+                        renderizarLista([]);
                         actualizarContadores([]);
                     }
                 })
                 .catch(err => {
                     console.error("Error:", err);
-                    document.getElementById('solicitudesList').innerHTML = 
+                    document.getElementById('solicitudesList').innerHTML =
                         '<p style="color:var(--error-color); text-align:center;">⚠️ Error de conexión con el servidor.</p>';
                 });
         }
 
+        function aplicarFiltros() {
+            const fEstado = document.getElementById('filtroEstado').value;
+            const fInicio = document.getElementById('filtroFechaInicio').value;
+            const fFin = document.getElementById('filtroFechaFin').value;
+
+            // Filtrado
+            const filtradas = todasLasSolicitudes.filter(s => {
+                // 1. Filtro Estado
+                let pasaEstado = true;
+                if (fEstado === 'activos') {
+                    pasaEstado = s.estado !== 'completado';
+                } else if (fEstado !== 'todos') {
+                    pasaEstado = s.estado === fEstado;
+                }
+
+                // 2. Filtro Fechas (Fecha Creación)
+                // s.fecha_creacion viene como "dd/mm/yyyy HH:MM" -> Hay que parsearlo
+                let pasaFecha = true;
+                if (fInicio || fFin) {
+                    const partes = s.fecha_creacion.split(' ')[0].split('/'); // [dd, mm, yyyy]
+                    // Constructor Date usa (yyyy, mm-1, dd). 
+                    // PERO para comparacion simple de string YYYY-MM-DD basta con reconstruir formato ISO
+                    const fechaSoliStr = `${partes[2]}-${partes[1]}-${partes[0]}`; // yyyy-mm-dd
+
+                    if (fInicio && fechaSoliStr < fInicio) pasaFecha = false;
+                    if (fFin && fechaSoliStr > fFin) pasaFecha = false;
+                }
+
+                return pasaEstado && pasaFecha;
+            });
+
+            renderizarLista(filtradas);
+            actualizarContadores(todasLasSolicitudes); // Pasamos TODAS para los KPIs globales
+        }
+
+        function renderizarLista(items) {
+            const lista = document.getElementById('solicitudesList');
+            lista.innerHTML = '';
+
+            if (items.length > 0) {
+                items.forEach(s => renderizarSolicitud(s));
+            } else {
+                lista.innerHTML = `
+                    <div style="text-align:center; padding:40px; color:#cbd5e1;">
+                        <div style="font-size:3rem; margin-bottom:10px;">🔍</div>
+                        <p>No se encontraron solicitudes con estos filtros</p>
+                    </div>`;
+            }
+        }
+
         function renderizarSolicitud(s) {
             const lista = document.getElementById('solicitudesList');
-            
+
             let statusClass = 'status-pendiente';
-            if(s.estado === 'proceso') statusClass = 'status-proceso';
-            if(s.estado === 'completado') statusClass = 'status-completado';
+            if (s.estado === 'proceso') statusClass = 'status-proceso';
+            if (s.estado === 'reparado') statusClass = 'status-completado'; // Visualmente verde para indicar listo
+            if (s.estado === 'completado') statusClass = 'status-completado';
 
             // --- LÓGICA DE BOTÓN INTELIGENTE ---
             let btnActionHTML = '';
 
             if (s.estado === 'pendiente') {
-                // Estado Pendiente: Botón GRIS (Deshabilitado) - Texto actualizado
+                // Estado Pendiente: Botón GRIS (Deshabilitado)
                 btnActionHTML = `
                     <div class="card-actions">
                         <button class="btn-action btn-disabled" disabled>
@@ -813,7 +1195,16 @@
                     </div>
                 `;
             } else if (s.estado === 'proceso') {
-                // Estado En Proceso: Botón VERDE (Habilitado para Recepcionar)
+                // Estado En Proceso: Botón GRIS (Deshabilitado) - Aún trabajando
+                btnActionHTML = `
+                    <div class="card-actions">
+                        <button class="btn-action btn-disabled" disabled>
+                            🛠️ En Reparación
+                        </button>
+                    </div>
+                `;
+            } else if (s.estado === 'reparado') {
+                // Estado Reparado: Botón VERDE (Habilitado para Recepcionar)
                 btnActionHTML = `
                     <div class="card-actions">
                         <button class="btn-action btn-edit" 
@@ -872,24 +1263,45 @@
             lista.insertAdjacentHTML('beforeend', html);
         }
 
-        function actualizarContadores(data) {
-            document.getElementById('total-solicitudes').textContent = data.length;
-            document.getElementById('solicitudes-pendientes').textContent = data.filter(s => s.estado === 'pendiente').length;
-            document.getElementById('solicitudes-proceso').textContent = data.filter(s => s.estado === 'proceso').length;
-            document.getElementById('solicitudes-completadas').textContent = data.filter(s => s.estado === 'completado').length;
+        function actualizarContadores(todas) {
+            // KPIs Globales (Independientes del filtro visual)
+
+            // Total Activas = Pendientes + Proceso + Reparado (EXCLUYE Completado)
+            const activas = todas.filter(s => s.estado !== 'completado').length;
+
+            const pendientes = todas.filter(s => s.estado === 'pendiente').length;
+            const proceso = todas.filter(s => s.estado === 'proceso').length;
+            const completadas = todas.filter(s => s.estado === 'completado').length;
+
+            document.getElementById('total-solicitudes').textContent = activas;
+            document.getElementById('solicitudes-pendientes').textContent = pendientes;
+            document.getElementById('solicitudes-proceso').textContent = proceso;
+            document.getElementById('solicitudes-completadas').textContent = completadas;
         }
 
         // --- 8. RECEPCIÓN (Modal Verde) ---
         function abrirRecepcion(idSolicitud, nombreEquipo) {
             document.getElementById('rec_solicitud_id').value = idSolicitud;
             document.getElementById('rec_equipo_texto').value = nombreEquipo;
-            
+
+            // Cargar la descripción original buscando en el array global
+            const solicitud = todasLasSolicitudes.find(s => s.id_solicitud == idSolicitud);
+            const txtNotas = document.getElementById('rec_notas');
+
+            if (solicitud) {
+                txtNotas.value = solicitud.descripcion || "Sin descripción disponible.";
+            } else {
+                txtNotas.value = "Error al cargar descripción.";
+            }
+
+            // Reset de Selects
             document.getElementById('rec_warehouse').value = "";
-            document.getElementById('rec_rack').innerHTML = '<option>Seleccione Warehouse</option>'; 
+            document.getElementById('rec_rack').innerHTML = '<option>Seleccione Warehouse</option>';
             document.getElementById('rec_rack').disabled = true;
-            document.getElementById('rec_posicion').innerHTML = '<option>Seleccione Rack</option>'; 
+            document.getElementById('rec_posicion').innerHTML = '<option>Seleccione Rack</option>';
             document.getElementById('rec_posicion').disabled = true;
-            document.getElementById('rec_notas').value = "";
+            document.getElementById('rec_posicion').disabled = true;
+            // document.getElementById('rec_notas').value = ""; // Eliminado para no borrar la descripción
 
             modalRec.style.display = 'flex';
         }
@@ -897,17 +1309,17 @@
         function cargarRacksRecepcion(whId) {
             const rackSel = document.getElementById('rec_rack');
             rackSel.innerHTML = '<option>Cargando...</option>'; rackSel.disabled = true;
-            
-            if(!whId) return;
 
-            fetch(`${API.racks}?warehouse_id=${whId}`)
+            if (!whId) return;
+
+            fetch(`${API.racks}?warehouse_id=${whId}&_t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(data => {
                     rackSel.innerHTML = '<option value="">-- Seleccionar Rack --</option>';
                     if (data.racks) {
                         data.racks.forEach(r => {
                             const op = document.createElement('option');
-                            op.value = r; op.textContent = `Rack ${r}`;
+                            op.value = r; op.textContent = `Rack ${r} `;
                             rackSel.appendChild(op);
                         });
                         rackSel.disabled = false;
@@ -922,16 +1334,16 @@
 
             posSel.innerHTML = '<option>Cargando celdas...</option>'; posSel.disabled = true;
 
-            fetch(`${API.posiciones}?warehouse_id=${whId}&rack=${rack}`)
+            fetch(`${API.posiciones}?warehouse_id=${whId}&rack=${rack}&_t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(data => {
                     posSel.innerHTML = '<option value="">-- Seleccionar Posición --</option>';
-                    if(data.posiciones) {
+                    if (data.posiciones) {
                         data.posiciones.forEach(p => {
                             const op = document.createElement('option');
                             op.value = p.id;
                             op.textContent = p.texto;
-                            if(p.ocupada) op.style.color = 'red'; 
+                            if (p.ocupada) op.style.color = 'red';
                             posSel.appendChild(op);
                         });
                         posSel.disabled = false;
@@ -944,7 +1356,7 @@
             const idUbicacion = document.getElementById('rec_posicion').value;
             const notas = document.getElementById('rec_notas').value;
 
-            if(!idUbicacion) {
+            if (!idUbicacion) {
                 alert("⚠️ Debes seleccionar una ubicación física para guardar el equipo.");
                 return;
             }
@@ -965,25 +1377,34 @@
                     notas: notas
                 })
             })
-            .then(res => res.json())
-            .then(data => {
-                if(data.status === 'success') {
-                    alert("✅ Equipo recepcionado correctamente.");
-                    cerrarModalRecepcion();
-                    cargarSolicitudesBD();
-                } else {
-                    alert("❌ Error: " + data.message);
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert("Error de conexión al recepcionar.");
-            })
-            .finally(() => {
-                btn.textContent = txtOriginal; btn.disabled = false;
-            });
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert("✅ Equipo recepcionado correctamente.");
+                        cerrarModalRecepcion();
+                        cargarSolicitudesBD();
+
+                        // REFRESCAR INPUTS DEL FORMULARIO DE NUEVA SOLICITUD
+                        const whSelect = document.getElementById('warehouse');
+                        const rackSelect = document.getElementById('rackSelect');
+                        // Si el usuario tiene seleccionado algo en el formulario de creación, intentamos refrescarlo
+                        if (whSelect.value && rackSelect.value && !rackSelect.disabled) {
+                            cargarEquiposPorRack(); // Esto forzará la recarga de equipos disponibles
+                        }
+                    } else {
+                        alert("❌ Error: " + data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Error de conexión al recepcionar.");
+                })
+                .finally(() => {
+                    btn.textContent = txtOriginal; btn.disabled = false;
+                });
         }
 
     </script>
 </body>
+
 </html>
